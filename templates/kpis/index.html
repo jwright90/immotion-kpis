@@ -12,8 +12,10 @@
 
 <body class = 'container'>
     <h1>KPIs page</h1>
-    <h3>Total revenue to date: {{ t_revenue }} 
-    <h3>Total contribution to date: {{ t_contribution }}
+    <h3>Total revenue to date: {{ t_revenue.revenue__sum }} 
+    <h3>Total contribution to date: {{ t_partner_share.partner_share__sum }}
+    <h4>{{t_revenue}}</h4>
+    <h4>{{t_partner_share}}</h4>
 
         {% for report in reports %}
             <h5> Year {{ report.year }} - Week {{ report.week_number }}</h5>

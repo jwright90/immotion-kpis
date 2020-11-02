@@ -44,6 +44,5 @@ class Report(models.Model):
     partner_share = models.IntegerField()
     staff_costs = models.IntegerField()
 
-
     def contribution(self):
         return self.revenue - self.partner_share
