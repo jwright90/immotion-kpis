@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kpis'
+    'kpis',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

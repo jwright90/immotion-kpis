@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+
+<body class="container mt-3">
+
+<h1>Search</h1>
+
+<hr>
+
+<form method = "get">
+    {{ report_filter.form.as_p }}
+    <button type = "submit">Search</button>
+</form>
+
+<hr>
+
+{% comment %} <table class="table">
+    <thead>
+        <tr scope="col">
+            <th>Site</th>
+            {% for week in explorer %}
+                <th>{{ week.week }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customer_query %}
+            <tr>
+                <th scope="row">{{ customer.customer }}</th>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+<hr> {% endcomment %}
+
+<h4>Revenues</h4>
+{% comment %} {% for customer in customer_query %}
+    <li>{{ customer.customer }}</li>
+    {% for report in customer.report %}
+        <ul>Week {{ report.week_number }}: {{ report.revenue }}</ul>
+    {% endfor %}
+{% endfor %}
+
+<hr> {% endcomment %}
+
+{% for week in explorer %}
+    <li>Week: {{ week.week }}</li>
+    {% for report in week.report %}
+        <ul>{{ report.customer }}: {{ report.revenue }}</ul>
+    {% endfor %}
+{% endfor %}
+
+</body>
+
+</html>

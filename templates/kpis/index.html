@@ -9,12 +9,9 @@
     
 </head>
 ​
-​
 <body class = 'container'>
-    <h1>KPIs page</h1>
-    <h3>Total revenue to date: {{ t_revenue }} 
-    <h3>Total contribution to date: {{ t_contribution }}
-​
+    <h1 class="mb-4">Home</h1>
+
         {% for yearly_report in yearly_reports %}
             <h5> Year {{ yearly_report.year }}</h5>
             <table class="table">
@@ -58,5 +55,7 @@
             </table>
             <hr> 
         {% endfor %}
+
+    <p>Here's a <a href="/search">search tool</a> I also worked on.<p>
 </body>
 </html>
