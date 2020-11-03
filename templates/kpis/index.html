@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
-
+​
 <head>
-
+​
     <title>KPI Reports</title>
     
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     
 </head>
-
-
+​
+​
 <body class = 'container'>
     <h1>KPIs page</h1>
     <h3>Total revenue to date: {{ t_revenue }} 
     <h3>Total contribution to date: {{ t_contribution }}
-
-
-        {% for report in reports %}
-            <h5> Year {{ report.year }} - Week {{ report.week_number }}</h5>
+​
+        {% for yearly_report in yearly_reports %}
+            <h5> Year {{ yearly_report.year }}</h5>
             <table class="table">
                 <tr>
+                    <th>
+                        Week#
+                    </th>
                     <th>
                         Site
                     </th>
@@ -33,7 +35,12 @@
                         Contribution
                     </th>
                 </tr>
+                {% for report in yearly_report.report %}
+{#                    <h6>Week {{ report.week_number }}</h6>#}
                 <tr>
+                    <td>
+                        {{ report.week_number }}
+                    </td>
                     <td>
                         {{ report.customer }}
                     </td>
@@ -47,6 +54,7 @@
                         {{ report.contribution }}
                     </td>
                 </tr>
+                {% endfor %}
             </table>
             <hr> 
         {% endfor %}
