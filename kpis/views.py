@@ -69,18 +69,52 @@ def search(request):
             weekly_reports[rep.week_number].append(rep)
         else: weekly_reports[rep.week_number] = [rep]
 
-    explorer = [{"week" : k, "report": v} for k, v in weekly_reports.items()]
+    weekly_dict = [{"week" : k, "report": v} for k, v in weekly_reports.items()]
 
     customer_reports = {}
+    
     for rep in report_filter.qs:
+        print(rep.revenue)
         if customer_reports.get(rep.customer):
             customer_reports[rep.customer].append(rep)
-        else: customer_reports[rep.customer] = [rep]
+        else: customer_reports[rep.customer] = [rep] #a list containing one report   
     
     customer_query = [{"customer" : k, "report" : v} for k, v in customer_reports.items()]
 
+
+    customer_rev_list1 = []
+    customer_rev_list2 = []
+    customer_rev_dict = {}
+
+    def prod(val):
+        res = 0
+        for ele in val:
+            res += ele
+        return res
+
+    test_dict = {'gfg' : [1, 1, 1], 'is' : [1, 1, 1] }
+    res = sum(prod(sub) for sub in test_dict.values())
+
+
+    for dict in customer_query:
+            for rep in dict['report']:
+                customer_rev_dict[rep.customer] = rep.revenue
+
+
+
+    explorer = report_filter.qs
+    explorer2 = customer_reports
+    explorer3 = customer_rev_dict
+
+
+
+
+
     return render(request, 'search/report_list.html', { 'report_filter': report_filter, 
                                                         'customer_query' : customer_query,
-                                                        'explorer' : explorer
+                                                        'weekly_dict' : weekly_dict,
+                                                        'explorer' : explorer,
+                                                        'explorer2' : explorer2,
+                                                        'explorer3' : explorer3
                                                         })
 

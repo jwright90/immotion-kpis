@@ -10,6 +10,17 @@
 
 <body class="container mt-3">
 
+<h3 class="mb-3">Query Set</h3>
+<pre><code>{{ explorer }}</code></pre>
+<p class="lead"> For each report we need to group by customer and then sum all the revenus for each customer </p>
+
+<hr>
+
+<h5> Sandbox </h5>
+<pre><code><p>{{ explorer2 }}</p></code></pre>
+<pre><code><p>{{ explorer3 }}</p></code></pre>
+
+
 <h1>Search</h1>
 
 <hr>
@@ -25,7 +36,7 @@
     <thead>
         <tr scope="col">
             <th>Site</th>
-            {% for week in explorer %}
+            {% for week in weekly_dict %}
                 <th>{{ week.week }}</th>
             {% endfor %}
         </tr>
@@ -34,24 +45,27 @@
         {% for customer in customer_query %}
             <tr>
                 <th scope="row">{{ customer.customer }}</th>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
         {% endfor %}
     </tbody>
 
-</table>
+</table> {% endcomment %}
 
-<hr> {% endcomment %}
+<hr>
 
 <h4>Revenues</h4>
-{% comment %} {% for customer in customer_query %}
+{% for customer in customer_query %}
     <li>{{ customer.customer }}</li>
     {% for report in customer.report %}
         <ul>Week {{ report.week_number }}: {{ report.revenue }}</ul>
     {% endfor %}
 {% endfor %}
 
-<hr> {% endcomment %}
+<hr>
 
-{% for week in explorer %}
+{% comment %} {% for week in weekly_dict %}
     <li>Week: {{ week.week }}</li>
     {% for report in week.report %}
         <ul>{{ report.customer }}: {{ report.revenue }}</ul>
@@ -60,4 +74,4 @@
 
 </body>
 
-</html>
+</html> {% endcomment %}
