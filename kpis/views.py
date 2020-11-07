@@ -1,11 +1,10 @@
-from django.db.models import Sum
+from django import forms
+from django.db.models import Sum, Avg
 from django.shortcuts import render
-from kpis.models import Report
-import math
+from kpis.models import Report, Customer
 from .filters import ReportFilter
+import math, string
 
-
-# Create your views here.
 
 def index(request):
     reports_list = Report.objects.order_by('-year', 'week_number')
@@ -32,17 +31,6 @@ def index(request):
 
     explorer = reports_list.filter(year=2020, week_number=15)
 
-    #print(the_weekly_reports)
-
-    # week_14_plus = []
-    # week_14_customer = Report.objects.filter(week_number__gte=15)
-    
-    # for rep in week_14_customer:
-    #     week_14_plus.append(rep)
-    
-    # print(week_14_plus)
-
-
     reports_dict = {    'yearly_reports' : the_reports,
                         'reports' : reports_list, 
                         't_revenue' : reports_revenue['revenue__sum'], 
@@ -56,13 +44,11 @@ def index(request):
     return render(request, 'kpis/index.html', context=reports_dict)
 
 def search(request):
+
+    customer_list = Customer.objects.all()
     report_list = Report.objects.all()
-
-    # {Week 1: {}, Week 2: {}, Week 3: {}}
-
     report_filter = ReportFilter(request.GET, queryset=report_list)
     
-
     weekly_reports = {}
     for rep in report_filter.qs:
         if weekly_reports.get(rep.week_number):
@@ -81,40 +67,62 @@ def search(request):
     
     customer_query = [{"customer" : k, "report" : v} for k, v in customer_reports.items()]
 
+    customer_list1 = []
+    customer_list2 = []
+    customer_headsets = []
+    customer_td_headsets = {}
+    customer_tabledata = {}
 
-    customer_rev_list1 = []
-    customer_rev_list2 = []
-    customer_rev_dict = {}
+# --- filtered data table ---    
+    
+    for rep in report_filter.qs:
+        customer_list1.append(rep.customer.id)
+        customer_headsets.append(rep.headsets)
 
-    def prod(val):
-        res = 0
-        for ele in val:
-            res += ele
-        return res
+        for i in customer_list1:
+            total_rev_var = report_filter.qs.filter(customer=i).aggregate(Sum('revenue'))['revenue__sum']
+            total_headset_var = round(report_filter.qs.filter(customer=i).aggregate(Avg('headsets'))['headsets__avg'])
+            rev_per_headset_var = round(total_rev_var / total_headset_var)
+            partner_share_var = (report_filter.qs.filter(customer=i).aggregate(Sum('partner_share'))['partner_share__sum'])
+            # --- operations costs --- 
+            staff_cost_var = report_filter.qs.filter(customer=i).aggregate(Sum('staff_costs'))['staff_costs__sum']
+            rent_cost_var = report_filter.qs.filter(customer=i).aggregate(Sum('rent_cost'))['rent_cost__sum']
+            marketing_cost_var = report_filter.qs.filter(customer=i).aggregate(Sum('marketing_cost'))['marketing_cost__sum']
+            sundries_cost_var = report_filter.qs.filter(customer=i).aggregate(Sum('sundries_cost'))['sundries_cost__sum']
+            operations_cost_var = (staff_cost_var + marketing_cost_var + rent_cost_var + sundries_cost_var)
+            # --- profitability ratios
+            contribution_var = total_rev_var - partner_share_var - operations_cost_var
+            contribution_per_headset_var = round(contribution_var/total_headset_var) 
+            margin_var = round((contribution_var / total_rev_var)*100)
 
-    test_dict = {'gfg' : [1, 1, 1], 'is' : [1, 1, 1] }
-    res = sum(prod(sub) for sub in test_dict.values())
 
+            customer_tabledata[customer_list[i-1].customer_name] = {
+                "total_revenue" : total_rev_var,
+                "headsets" : total_headset_var,
+                "revenue_per_headset" : rev_per_headset_var,
+                "partner_share" : partner_share_var,
+                "operations_cost" : operations_cost_var,
+                "contribution" : contribution_var,
+                "contribution_per_headset" : contribution_per_headset_var,
+                "margin": margin_var,
+                }
 
-    for dict in customer_query:
-            for rep in dict['report']:
-                customer_rev_dict[rep.customer] = rep.revenue
+    customer_tabledict = [{"customer" : a, "table_info" : b,} for a, b in customer_tabledata.items()]
 
-
-
+# --- sandbox ---
     explorer = report_filter.qs
-    explorer2 = customer_reports
-    explorer3 = customer_rev_dict
+    explorer2 = customer_tabledict
+    explorer3 = customer_tabledata
 
 
-
-
-
+# --- dictionaries ---
     return render(request, 'search/report_list.html', { 'report_filter': report_filter, 
                                                         'customer_query' : customer_query,
                                                         'weekly_dict' : weekly_dict,
                                                         'explorer' : explorer,
                                                         'explorer2' : explorer2,
-                                                        'explorer3' : explorer3
+                                                        'explorer3' : explorer3,
+                                                        'customer_tabledata' : customer_tabledata,
+                                                        'customer_tabledict' : customer_tabledict
                                                         })
 

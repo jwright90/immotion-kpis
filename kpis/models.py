@@ -38,11 +38,20 @@ class Customer(models.Model):
 
 class Report(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    year = models.IntegerField(null=True, validators = [MinValueValidator(2018), MaxValueValidator(2100)])
-    week_number = models.IntegerField(null=True, validators = [MinValueValidator(1), MaxValueValidator(53)])
+    year = models.IntegerField(validators = [MinValueValidator(2018), MaxValueValidator(2100)])
+    week_number = models.IntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)])
+    headsets = models.IntegerField()
     revenue = models.IntegerField()
     partner_share = models.IntegerField()
     staff_costs = models.IntegerField()
+    rent_cost = models.IntegerField()
+    marketing_cost = models.IntegerField()
+    sundries_cost = models.IntegerField()
 
     def contribution(self):
         return self.revenue - self.partner_share
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['year', 'week_number'], name="unique_period")
+        ]

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'kpis',
     'django_filters',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

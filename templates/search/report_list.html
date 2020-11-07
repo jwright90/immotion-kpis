@@ -8,6 +8,9 @@
 
 </head>
 
+{% load humanize %}
+
+
 <body class="container mt-3">
 
 <h3 class="mb-3">Query Set</h3>
@@ -26,36 +29,49 @@
 <hr>
 
 <form method = "get">
-    {{ report_filter.form.as_p }}
+        {{ report_filter.form.as_p }}
+
     <button type = "submit">Search</button>
 </form>
 
-<hr>
-
-{% comment %} <table class="table">
+<table class="table mt-3">
     <thead>
         <tr scope="col">
-            <th>Site</th>
-            {% for week in weekly_dict %}
-                <th>{{ week.week }}</th>
-            {% endfor %}
+            <th></th>
+            <th>Revenue</th>
+            <th>Avg Headsets</th>
+            <th>Revenue / Headset</th>
+            <th>Partner Share</th>
+            <th>Operational Costs</th>
+            <th>Contribution</th>
+            <th>Contribution / Headset</th>
+            <th>Margin</th>
         </tr>
     </thead>
+
+    <!-- {{ my_num|intcomma }} for formatting -->
+
     <tbody>
-        {% for customer in customer_query %}
+        {% for k in customer_tabledict %}
             <tr>
-                <th scope="row">{{ customer.customer }}</th>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
+                <th scope="row">{{ k.customer }}</th>
+                <td>{{ k.table_info.total_revenue|intcomma }}</td>
+                <td>{{ k.table_info.headsets|intcomma }}</td>
+                <td>{{ k.table_info.revenue_per_headset|intcomma}}</td>
+                <td>({{ k.table_info.partner_share|intcomma }})</td>
+                <td>({{ k.table_info.operations_cost|intcomma }})</td>
+                <td>{{ k.table_info.contribution|intcomma }}</td>
+                <td>{{ k.table_info.contribution_per_headset|intcomma }}</td>
+                <td>{{ k.table_info.margin }}%</td>
         {% endfor %}
     </tbody>
 
-</table> {% endcomment %}
+</table>
 
 <hr>
 
 <h4>Revenues</h4>
+
 {% for customer in customer_query %}
     <li>{{ customer.customer }}</li>
     {% for report in customer.report %}
