@@ -13,25 +13,19 @@
 
 <body class="container mt-3">
 
-<h3 class="mb-3">Query Set</h3>
-<pre><code>{{ explorer }}</code></pre>
-<p class="lead"> For each report we need to group by customer and then sum all the revenus for each customer </p>
-
-<hr>
-
-<h5> Sandbox </h5>
-<pre><code><p>{{ explorer2 }}</p></code></pre>
-<pre><code><p>{{ explorer3 }}</p></code></pre>
-
-
-<h1>Search</h1>
-
-<hr>
-
+<h3>Filter page</h3>
 <form method = "get">
-        {{ report_filter.form.as_p }}
-
-    <button type = "submit">Search</button>
+    <div class="form-group my-2">  
+        {% for field in report_filter.form %}
+        <label class="col-sm-4 control-label" for="{{ field.name }}">{{ field.label }} : </label>
+        <div class="col-sm-8">
+            {{ field }}
+        </div>
+        {% endfor %}
+        <div class="col-sm-12">
+        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+        </div>
+    </div>
 </form>
 
 <table class="table mt-3">
@@ -49,7 +43,7 @@
         </tr>
     </thead>
 
-    <!-- {{ my_num|intcomma }} for formatting -->
+    <!-- {{ my_num|intcomma }} for formatting with commas -->
 
     <tbody>
         {% for k in customer_tabledict %}
@@ -70,24 +64,10 @@
 
 <hr>
 
-<h4>Revenues</h4>
-
-{% for customer in customer_query %}
-    <li>{{ customer.customer }}</li>
-    {% for report in customer.report %}
-        <ul>Week {{ report.week_number }}: {{ report.revenue }}</ul>
-    {% endfor %}
-{% endfor %}
-
-<hr>
-
-{% comment %} {% for week in weekly_dict %}
-    <li>Week: {{ week.week }}</li>
-    {% for report in week.report %}
-        <ul>{{ report.customer }}: {{ report.revenue }}</ul>
-    {% endfor %}
-{% endfor %}
+<h4> Sandbox </h4>
+<pre><code><p>{{ explorer2 }}</p></code></pre>
+<pre><code><p>{{ explorer3 }}</p></code></pre>
 
 </body>
 
-</html> {% endcomment %}
+</html>

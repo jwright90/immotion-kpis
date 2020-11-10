@@ -2,15 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
-
-# Weeks
-## Each report has one week, each week has many reports
-## I want the user to enter the year and week number for each report
-
-# Reports
-# Customers
-# Categories
-# Locations
+from datetime import datetime
 
 class Category(models.Model):
     category_name = models.CharField(max_length=30)
@@ -27,31 +19,49 @@ class Location(models.Model):
     def __str__(self):
         return self.location
 
+#--- Customer model ---
+
 class Customer(models.Model):
     customer_name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    active = models.BooleanField(blank=True)
 
     def __str__(self):
         return self.customer_name
+    
+    def __int__(self):
+        return self.default_headsets
+
+#--- Report model ---#
+
+def default_year():
+    return int(datetime.now().year)
+
+def default_week():
+    week_number = int(datetime.now().isocalendar()[1])
+    if week_number == 1:
+        return week_number
+    else:
+        return (week_number - 1)
 
 class Report(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    year = models.IntegerField(validators = [MinValueValidator(2018), MaxValueValidator(2100)])
-    week_number = models.IntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)])
-    headsets = models.IntegerField()
+    year = models.PositiveIntegerField(validators = [MinValueValidator(2018), MaxValueValidator(2100)], default=default_year)
+    week_number = models.PositiveIntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)], default=default_week)
+    headsets = models.PositiveIntegerField()
+    gameplays = models.PositiveIntegerField(null=True, blank=True)
+    customer_report_received = models.BooleanField()
     revenue = models.IntegerField()
-    partner_share = models.IntegerField()
-    staff_costs = models.IntegerField()
-    rent_cost = models.IntegerField()
-    marketing_cost = models.IntegerField()
-    sundries_cost = models.IntegerField()
-
-    def contribution(self):
-        return self.revenue - self.partner_share
+    estimate = models.BooleanField(default=False)
+    partner_share = models.PositiveIntegerField(default=0)
+    staff_costs = models.PositiveIntegerField(default=0)
+    rent_cost = models.PositiveIntegerField(default=0)
+    marketing_cost = models.PositiveIntegerField(default=0)
+    sundries_cost = models.PositiveIntegerField(default=0)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['year', 'week_number'], name="unique_period")
+            models.UniqueConstraint(fields=['customer', 'year', 'week_number'], name="unique_period")
         ]
