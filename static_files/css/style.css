@@ -1,0 +1,49 @@
+html,
+body,
+header,
+.carousel {
+  height: 60vh;
+}
+
+
+@media (max-width: 740px) {
+
+  html,
+  body,
+  header,
+  .carousel {
+    height: 100vh;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 850px) {
+
+  html,
+  body,
+  header,
+  .carousel {
+    height: 100vh;
+  }
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #ccccccc;
+    padding: 8px;
+}
+
+th {
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: lightgray;
+}
+
+tr:hover {
+  color: white;
+  background-color: darkslateblue; 
+}

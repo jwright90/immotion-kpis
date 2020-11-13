@@ -1,17 +1,10 @@
-<!doctype html>
+{% extends "base.html" %}
 
-<html>
-
-<head>
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-</head>
+{% block content %}
 
 {% load humanize %}
 
-
-<body class="container mt-3">
+<script>let tableData = {{ customer_tabledata|safe }};</script>
 
 <h3>Filter page</h3>
 <form method = "get">
@@ -28,10 +21,11 @@
     </div>
 </form>
 
+<!--- Original table -->
 <table class="table mt-3">
     <thead>
         <tr scope="col">
-            <th></th>
+            <th>Customer</th>
             <th>Revenue</th>
             <th>Avg Headsets</th>
             <th>Revenue / Headset</th>
@@ -57,7 +51,32 @@
                 <td>{{ k.table_info.contribution|intcomma }}</td>
                 <td>{{ k.table_info.contribution_per_headset|intcomma }}</td>
                 <td>{{ k.table_info.margin }}%</td>
+            </tr>
         {% endfor %}
+    </tbody>
+
+</table>
+
+<!--- Dynamic table -->
+<table class="table mt-3">
+    <thead>
+        <tr scope="col">
+            <th onclick="sortCustomerColumn()">Customer</th>
+            <th onclick="sortColumn('total_revenue')">Revenue</th>
+            <th onclick="sortColumn('headsets')"> Avg Headsets</th>
+            <th onclick="sortColumn('revenue_per_headset')">Revenue / Headset</th>
+            <th onclick="sortColumn('partner_share')">Partner Share</th>
+            <th onclick="sortColumn('operations_cost')">Operational Costs</th>
+            <th onclick="sortColumn('contribution')">Contribution</th>
+            <th onclick="sortColumn('contribution_per_headset')">Contribution / Headset</th>
+            <th onclick="sortColumn('margin')">Margin</th>
+        </tr>
+    </thead>
+
+    <!-- {{ my_num|intcomma }} for formatting with commas -->
+
+    <tbody id="tableData">
+
     </tbody>
 
 </table>
@@ -68,6 +87,5 @@
 <pre><code><p>{{ explorer2 }}</p></code></pre>
 <pre><code><p>{{ explorer3 }}</p></code></pre>
 
-</body>
+{% endblock content %}
 
-</html>

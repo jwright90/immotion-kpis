@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 ​
-<head>
-​
-    <title>KPI Reports</title>
+
+<title>KPI Reports</title>
     
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    
-</head>
-​
+{% block content %}
+
 <body class = 'container'>
     <h1 class="mb-4">Home</h1>
 
@@ -57,5 +53,7 @@
         {% endfor %}
 
     <p>Here's a <a href="/search">search tool</a> I also worked on.<p>
+
 </body>
-</html>
+
+{% endblock content %}

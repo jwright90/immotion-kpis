@@ -43,6 +43,7 @@ def index(request):
 
     return render(request, 'kpis/index.html', context=reports_dict)
 
+
 def search(request):
 
     customer_list = Customer.objects.all()
@@ -73,7 +74,7 @@ def search(request):
     customer_td_headsets = {}
     customer_tabledata = {}
 
-# --- filtered data table ---    
+# --- filtered data table for 'search' page ---    
     
     for rep in report_filter.qs:
         customer_list1.append(rep.customer.id)
@@ -125,4 +126,3 @@ def search(request):
                                                         'customer_tabledata' : customer_tabledata,
                                                         'customer_tabledict' : customer_tabledict
                                                         })
-

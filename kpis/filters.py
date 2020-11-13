@@ -8,11 +8,10 @@ class ReportFilter(django_filters.FilterSet):
         field_name='week_number',
         widget= MultiWidget(widgets={'from' : NumberInput, 'to' : NumberInput}),
     )
-
-    category = django_filters
     
     class Meta:
         model = Report
         fields =    {   'year' :        ['exact' ], 
                         'week_number' : ['exact' ],
+                        'customer__category' : ['exact'],
                     }
