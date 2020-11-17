@@ -22,17 +22,23 @@ class Location(models.Model):
 #--- Customer model ---
 
 class Customer(models.Model):
+    CURRENCIES = (
+        ('USD', 'USD'),
+        ('GBP', 'GBP'),
+        ('RMB', 'RMB'),
+        ('EUR', 'EUR'),
+        ('AED', 'AED'),
+    )
+
     customer_name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     active = models.BooleanField(blank=True)
+    currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)   
 
     def __str__(self):
         return self.customer_name
-    
-    def __int__(self):
-        return self.default_headsets
 
 #--- Report model ---#
 
@@ -61,6 +67,22 @@ class Report(models.Model):
     marketing_cost = models.PositiveIntegerField(default=0)
     sundries_cost = models.PositiveIntegerField(default=0)
 
+    def revenue_per_headset(self):
+        return round(self.revenue / self.headsets)
+
+    def operating_costs(self):
+        return round(self.staff_costs + self.rent_cost 
+                        + self.marketing_cost + self.sundries_cost )
+
+    def contribution(self):
+        return round(self.revenue - self.partner_share)
+
+    def contribution_per_headset(self):
+        return round((self.revenue - self.partner_share) / self.headsets)
+
+    def margin(self):
+        return round(((self.revenue - self.partner_share) / self.revenue) *100)
+        
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['customer', 'year', 'week_number'], name="unique_period")

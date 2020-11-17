@@ -1,0 +1,71 @@
+
+{% extends 'kpis/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+<h2>Year {{ year }} - Week {{ week_number }}</h2>
+<h4>Total revenue: {{ total_revenue|intcomma }}</h4>
+
+<br>
+
+<table class="table">
+    <tr>
+        <th>Customer</th>
+        <th>Revenue</th>
+        <th>Headsets</th>
+        <th>Revenue / Headset</th>
+        <th>Partner Share</th>
+        <th>Operating Costs</th>
+        <th>Contribution</th>
+        <th>Contribution / Headset</th>
+        <th>Margin</th>
+    </tr>
+
+    {% for report in reports %}
+        <tr>
+            <td>{{ report.customer }}</td>
+            <td>{{ report.revenue|intcomma }}</td>
+            <td>{{ report.headsets }}</td>
+            <td>{{ report.revenue_per_headset }}</td>
+            <td>{{ report.partner_share }}</td>
+            <td>{{ report.operating_costs }}</td>
+            <td>{{ report.contribution }}</td>
+            <td>{{ report.contribution_per_headset }}</td>
+            <td>{{ report.margin }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<br>
+
+<table class="table">
+    <tr>
+        <th>Category</th>
+        <th>Revenue</th>
+        <th>Headsets</th>
+        <th>Revenue / Headset</th>
+        <th>Partner Share</th>
+        <th>Operating Costs</th>
+        <th>Contribution</th>
+        <th>Contribution / Headset</th>
+        <th>Margin</th>
+    </tr>
+
+
+        <tr>
+            <td>Entertainment</td>
+            <td>{{ rep_ent_rev|intcomma }}</td>
+            <td>{{ rep_ent_hs }}</td>
+            <td>{{ rep_ent_rphs }}</td>
+            <td>{{ rep_ent_ps|intcomma }}</td>
+            <td>{{ rep_ent_ops|intcomma }}</td>
+            <td>{{ rep_ent_contr|intcomma }}</td>
+            <td>{{ rep_ent_contr_hs|intcomma }}</td>
+            <td>{{ rep_ent_margin|intcomma }}</td>
+        </tr>
+
+</table>
+
+{% endblock%}

@@ -17,5 +17,5 @@ class CategoryAdmin(admin.ModelAdmin):
 	list_display = ('category_name',)
 
 @admin.register(Location)
-class CategoryAdmin(admin.ModelAdmin):
+class LocationAdmin(admin.ModelAdmin):
 	list_display = ('location',)

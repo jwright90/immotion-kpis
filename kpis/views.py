@@ -1,7 +1,8 @@
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django import forms
 from django.db.models import Sum, Avg
-from django.shortcuts import render
-from kpis.models import Report, Customer
+from .models import *
 from .filters import ReportFilter
 import math, string
 
@@ -29,14 +30,11 @@ def index(request):
 
     the_weekly_reports = [{"week" : k, "report": v} for k, v in weekly_reports.items()]
 
-    explorer = reports_list.filter(year=2020, week_number=15)
-
     reports_dict = {    'yearly_reports' : the_reports,
                         'reports' : reports_list, 
                         't_revenue' : reports_revenue['revenue__sum'], 
                         't_partner_share' : reports_partner_share['partner_share__sum'],
                         't_contribution' : reports_contribution,
-                        'explorer' : explorer,
     }
 
     #print to see what is inside variable
@@ -111,18 +109,58 @@ def search(request):
     customer_tabledict = [{"customer" : a, "table_info" : b,} for a, b in customer_tabledata.items()]
 
 # --- sandbox ---
-    explorer = report_filter.qs
     explorer2 = customer_tabledict
     explorer3 = customer_tabledata
 
-
 # --- dictionaries ---
-    return render(request, 'search/report_list.html', { 'report_filter': report_filter, 
+    return render(request, 'kpis/report_list.html', { 'report_filter': report_filter, 
                                                         'customer_query' : customer_query,
                                                         'weekly_dict' : weekly_dict,
-                                                        'explorer' : explorer,
                                                         'explorer2' : explorer2,
                                                         'explorer3' : explorer3,
                                                         'customer_tabledata' : customer_tabledata,
                                                         'customer_tabledict' : customer_tabledict
                                                         })
+
+
+def week(request, wk, yr):
+    
+    reports = Report.objects.filter(week_number=wk, year=yr).order_by('customer__customer_name')
+    week_number = wk
+    year = yr
+
+    total_revenue = reports.aggregate(Sum('revenue'))['revenue__sum']
+
+    #Previous week's reports
+    prev_wk_reports = Report.objects.filter(week_number=wk-1, year=yr)
+
+    #Entertainment Category
+    rep_ent = reports.filter(customer__category__category_name="Entertainment")
+    rep_ent_rev = rep_ent.aggregate(Sum('revenue'))['revenue__sum']
+    rep_ent_hs = rep_ent.aggregate(Sum('headsets'))['headsets__sum']
+    rep_ent_rphs = round(rep_ent_rev / rep_ent_hs)
+    rep_ent_ps = rep_ent.aggregate(Sum('partner_share'))['partner_share__sum']
+    
+    ###Operating costs
+    rep_ent_staff = rep_ent.aggregate(Sum('staff_costs'))['staff_costs__sum']
+    rep_ent_rent = rep_ent.aggregate(Sum('rent_cost'))['rent_cost__sum']
+    rep_ent_marketing = rep_ent.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
+    rep_ent_sundries = rep_ent.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
+    rep_ent_ops = rep_ent_staff + rep_ent_rent + rep_ent_marketing + rep_ent_sundries
+
+    ###Contribution
+    rep_ent_contr = rep_ent_rev - rep_ent_ps - rep_ent_ops
+    rep_ent_contr_hs = round(rep_ent_contr / rep_ent_hs)
+
+    ###Margin
+    rep_ent_margin = round((rep_ent_contr / rep_ent_rev)*100)
+
+    context = { 'reports' : reports, 'week_number' : week_number, 'year' : year,
+                'total_revenue' : total_revenue, 'prev_wk_reports' : prev_wk_reports,
+                'rep_ent' : rep_ent, 'rep_ent_rev' : rep_ent_rev, 'rep_ent_hs' : rep_ent_hs,
+                'rep_ent_rphs' : rep_ent_rphs, 'rep_ent_ps' : rep_ent_ps,
+                'rep_ent_ops' : rep_ent_ops, 'rep_ent_contr' : rep_ent_contr,
+                'rep_ent_contr_hs' : rep_ent_contr_hs, 'rep_ent_margin' : rep_ent_margin,
+                 }
+
+    return render(request, 'kpis/week.html', context)
