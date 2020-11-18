@@ -46,6 +46,7 @@ th {
     font-weight: bold;
 }
 
+/*
 tr:nth-child(even) {
   background-color: lightgray;
 }
@@ -54,3 +55,4 @@ tr:hover {
   color: white;
   background-color: darkslateblue; 
 }
+*/

@@ -46,9 +46,7 @@ function sortNumberColumn(sort, columnName) {
     });
 }
 
-$(document).ready( function () {
-    $('#weekTable').DataTable();
-} );
+
 
 /*
 function sortByCustomer() {

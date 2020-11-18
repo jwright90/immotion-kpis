@@ -5,23 +5,167 @@
 
 {% block content %}
 
-<h2>Year {{ year }} - Week {{ week_number }}</h2>
-<h4>Total revenue: {{ total_revenue|intcomma }}</h4>
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="card col-lg m-1 border-0 text-center">
+            <div class="card-body">
+                <h4 class="display-3">Week {{ week_number }} - {{ year }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row"><br></div>
+
+    <div class="row">
+
+        <div class="card col-lg m-1">
+            <div class="card-body col">
+                <h6>Net revenue <br> (£ GBP)</h6><h2>{{ reports_revenue|intcomma }}</h2>
+            </div>
+            <table class="table small">
+                <thead>
+                    <th>Vs.</th>
+                    <th>+/-</th>
+                </thead>
+                <tr>
+                    <th>Last week</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>Last year</th>
+                    <th></th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card col-lg m-1">
+            <div class="card-body">
+                <h6>Headsets in operation</h6><h2>{{ reports_hs|intcomma }}</h2>
+            </div>
+            <table class="table small">
+                <tr class="">
+                    <th></th>
+                    <th>{{prv_1year}}</th>
+                    <th>{{year}}</th>
+                </tr>
+                <tr class="">
+                    <th>IVR</th>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="">
+                    <th>Partner</th>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card col-lg m-1">
+            <div class="card-body">
+                <h6>Revenue per headset</h6><h2>{{ reports_rhs|intcomma }}</h2>
+            </div>
+            <table class="table small">
+                <tr class="">
+                    <th>IVR</th>
+                    <td></td>
+                </tr>
+                <tr class="">
+                    <th>Aquarium</th>
+                    <td>{{ rep_aqu_rphs }}</td>
+                </tr>
+                <tr class="">
+                    <th>Entertainment</th>
+                    <td>{{ rep_ent_rphs }}</td>
+                </tr>
+
+                <tr class="">
+                    <th>Other</th>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card col-lg m-1">
+            <div class="card-body">
+                <h6>Margin</h6><h2>{{ reports_margin|intcomma }}%</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <br>
 
-<table class="table">
+<table class="table table-hover text-uppercase small">
+    <thead class="thead-dark ">
+        <tr>
+            <th></th>
+            <th>Revenue</th>
+            <th>Headsets</th>
+            <th>Rev / HS </th>
+            <th>Partner Share</th>
+            <th>Operating Costs</th>
+            <th>Contribution</th>
+            <th>Cont / HS </th>
+            <th>Margin</th>
+        </tr>
+    </thead>
+
+    <thead class="thead-light">
+        <tr>
+            <th>Categories</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+
     <tr>
-        <th>Customer</th>
-        <th>Revenue</th>
-        <th>Headsets</th>
-        <th>Revenue / Headset</th>
-        <th>Partner Share</th>
-        <th>Operating Costs</th>
-        <th>Contribution</th>
-        <th>Contribution / Headset</th>
-        <th>Margin</th>
+        <td>Aquarium</td>
+        <td>{{ rep_aqu_rev|intcomma }}</td>
+        <td>{{ rep_aqu_hs }}</td>
+        <td>{{ rep_aqu_rphs }}</td>
+        <td>{{ rep_aqu_ps|intcomma }}</td>
+        <td>{{ rep_aqu_ops|intcomma }}</td>
+        <td>{{ rep_aqu_contr|intcomma }}</td>
+        <td>{{ rep_aqu_contr_hs|intcomma }}</td>
+        <td>{{ rep_aqu_margin|intcomma }}%</td>
     </tr>
+
+    <tr>
+        <td>Entertainment</td>
+        <td>{{ rep_ent_rev|intcomma }}</td>
+        <td>{{ rep_ent_hs }}</td>
+        <td>{{ rep_ent_rphs }}</td>
+        <td>{{ rep_ent_ps|intcomma }}</td>
+        <td>{{ rep_ent_ops|intcomma }}</td>
+        <td>{{ rep_ent_contr|intcomma }}</td>
+        <td>{{ rep_ent_contr_hs|intcomma }}</td>
+        <td>{{ rep_ent_margin|intcomma }}%</td>
+    </tr>
+
+    <thead class="thead-light">
+        <tr>
+            <th>Location</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
 
     {% for report in reports %}
         <tr>
@@ -33,39 +177,11 @@
             <td>{{ report.operating_costs }}</td>
             <td>{{ report.contribution }}</td>
             <td>{{ report.contribution_per_headset }}</td>
-            <td>{{ report.margin }}</td>
+            <td>{{ report.margin }}%</td>
         </tr>
     {% endfor %}
 </table>
 
 <br>
-
-<table class="table">
-    <tr>
-        <th>Category</th>
-        <th>Revenue</th>
-        <th>Headsets</th>
-        <th>Revenue / Headset</th>
-        <th>Partner Share</th>
-        <th>Operating Costs</th>
-        <th>Contribution</th>
-        <th>Contribution / Headset</th>
-        <th>Margin</th>
-    </tr>
-
-
-        <tr>
-            <td>Entertainment</td>
-            <td>{{ rep_ent_rev|intcomma }}</td>
-            <td>{{ rep_ent_hs }}</td>
-            <td>{{ rep_ent_rphs }}</td>
-            <td>{{ rep_ent_ps|intcomma }}</td>
-            <td>{{ rep_ent_ops|intcomma }}</td>
-            <td>{{ rep_ent_contr|intcomma }}</td>
-            <td>{{ rep_ent_contr_hs|intcomma }}</td>
-            <td>{{ rep_ent_margin|intcomma }}</td>
-        </tr>
-
-</table>
 
 {% endblock%}
