@@ -16,10 +16,11 @@
 
 {% include "kpis/navbar.html" %}
 
-<body class = "container mt-5">
-
-  {% block content  %}
-  {% endblock content %}
+<body>
+  <div class="container mt-4">
+    {% block content  %}
+    {% endblock content %}
+  </div>
 
   {% include "kpis/footer.html"%}
   {% include "kpis/scripts.html" %}

@@ -1,59 +1,56 @@
 {% extends "kpis/base.html" %}
-​
 
-<title>KPI Reports</title>
-    
 {% block content %}
 
-<body class = 'container'>
-    <h1 class="mb-4">Home</h1>
+<div class="container">
+<h1 class="">Home</h1>
 
-        {% for yearly_report in yearly_reports %}
-            <h5> Year {{ yearly_report.year }}</h5>
-            <table class="table">
-                <tr>
-                    <th>
-                        Week#
-                    </th>
-                    <th>
-                        Site
-                    </th>
-                    <th>
-                        Revenue
-                    </th>
-                    <th>
-                        Partner Share
-                    </th>
-                    <th>
-                        Contribution
-                    </th>
-                </tr>
-                {% for report in yearly_report.report %}
+    {% for yearly_report in yearly_reports %}
+        <h5> Year {{ yearly_report.year }}</h5>
+        <table class="table">
+            <tr>
+                <th>
+                    Week#
+                </th>
+                <th>
+                    Site
+                </th>
+                <th>
+                    Revenue
+                </th>
+                <th>
+                    Partner Share
+                </th>
+                <th>
+                    Contribution
+                </th>
+            </tr>
+            {% for report in yearly_report.report %}
 {#                    <h6>Week {{ report.week_number }}</h6>#}
-                <tr>
-                    <td>
-                        {{ report.week_number }}
-                    </td>
-                    <td>
-                        {{ report.customer }}
-                    </td>
-                    <td>
-                        {{ report.revenue }}
-                    </td>
-                    <td>
-                        {{ report.partner_share }}
-                    </td>
-                    <td>
-                        {{ report.contribution }}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            <hr> 
-        {% endfor %}
+            <tr>
+                <td>
+                    {{ report.week_number }}
+                </td>
+                <td>
+                    {{ report.customer }}
+                </td>
+                <td>
+                    {{ report.revenue }}
+                </td>
+                <td>
+                    {{ report.partner_share }}
+                </td>
+                <td>
+                    {{ report.contribution }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <hr> 
+    {% endfor %}
 
-    <p>Here's a <a href="/search">search tool</a> I also worked on.<p>
+<p>Here's a <a href="/search">search tool</a> I also worked on.<p>
+</div>
 
-</body>
 
 {% endblock content %}
