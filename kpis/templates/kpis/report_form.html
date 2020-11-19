@@ -1,0 +1,16 @@
+{% extends 'kpis/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h4>{{ success_note }}</h4>
+<h4>{{ fail_note }}</h4>
+
+    <form enctype="mutlipart/form-data" action="" method="POST">
+        {% csrf_token %}
+        {{ report_form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+
+{% endblock %}

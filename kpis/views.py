@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django import forms
 from django.db.models import Sum, Avg
 from .models import *
+from .forms import ReportForm
 from .filters import ReportFilter
 import math, string
 
@@ -234,3 +235,18 @@ def week(request, wk, yr):
                  }
 
     return render(request, 'kpis/week.html', context)
+
+
+
+def report_form(request):
+    if request.method == 'POST':
+        filled_form = ReportForm(request.POST)
+        if filled_form.is_valid():
+            success_note = 'Report posted.'
+            filled_form.save()
+            new_form = ReportForm()
+            return render(request, 'kpis/report_form.html', {'report_form' : new_form, 'success_note' : success_note})
+    else:
+        fail_note = 'Report not posted.'
+        new_form = ReportForm()
+        return render(request, 'kpis/report_form.html', {'report_form' : new_form, 'fail_note' : fail_note })

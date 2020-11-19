@@ -58,7 +58,7 @@ class Report(models.Model):
     week_number = models.PositiveIntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)], default=default_week)
     headsets = models.PositiveIntegerField()
     gameplays = models.PositiveIntegerField(null=True, blank=True)
-    customer_report_received = models.BooleanField()
+    customer_report_received = models.BooleanField(default=False)
     revenue = models.IntegerField()
     estimate = models.BooleanField(default=False)
     partner_share = models.PositiveIntegerField(default=0)
@@ -66,7 +66,7 @@ class Report(models.Model):
     rent_cost = models.PositiveIntegerField(default=0)
     marketing_cost = models.PositiveIntegerField(default=0)
     sundries_cost = models.PositiveIntegerField(default=0)
-
+    
     def revenue_per_headset(self):
         return round(self.revenue / self.headsets)
 
