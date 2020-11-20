@@ -1,0 +1,30 @@
+{% extends "kpis/base.html" %}
+
+{% block content %}
+
+<h1 class="">{{ customer }}</h1>
+<h2 class="mb-4">Week: {{ week }} - {{ year }} </h2>
+
+    <table class="table">
+        <tr>
+            <th>Revenue</th>
+            <th>Headsets</th>
+            <th>Rev/HS</th>
+            <th>Staff</th>
+            <th>Marketing</th>
+            <th>Contribution</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>{{ report.revenue }}</td>
+            <td>{{ report.headsets }}</td>
+            <td>{{ report.revenue_per_headset }}</td>
+            <td>{{ report.staff_costs }}</td>
+            <td>{{ report.marketing_cost }}</td>
+            <td>{{ report.contribution}}</td>
+            <td></td>
+        </tr>
+    </table>
+
+
+{% endblock content %}

@@ -186,7 +186,7 @@
 
     {% for report in reports %}
         <tr>
-            <td>{{ report.customer }}</td>
+            <td><a href="/report/{{report.id}}">{{ report.customer }}</a></td>
             <td>{{ report.revenue|intcomma }}</td>
             <td>{{ report.headsets }}</td>
             <td>{{ report.revenue_per_headset }}</td>

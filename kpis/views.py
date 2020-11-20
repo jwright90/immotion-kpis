@@ -123,6 +123,34 @@ def search(request):
                                                         'customer_tabledict' : customer_tabledict
                                                         })
 
+def report(request, pk):
+
+    report = Report.objects.get(id=pk)
+    customer = report.customer
+    week = report.week_number
+    year = report.year
+
+    context = {
+        'report' : report,
+        'customer' : customer,
+        'week' : week,
+        'year' : year,
+    }
+
+    return render(request, 'kpis/report.html', context)
+
+
+def all_reports(request):
+
+    reports = Report.objects.all().order_by('-estimate', '-year', '-week_number')
+
+    context = {
+        'reports' : reports,
+    }
+
+    return render(request, 'kpis/all_reports.html', context)
+
+
 
 def week(request, wk, yr):
     
@@ -235,7 +263,6 @@ def week(request, wk, yr):
                  }
 
     return render(request, 'kpis/week.html', context)
-
 
 
 def report_form(request):

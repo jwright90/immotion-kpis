@@ -1,0 +1,33 @@
+{% extends "kpis/base.html" %}
+
+{% block content %}
+
+<h1 class="">All Reports</h1>
+
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Year</th>
+            <th>Week</th>
+            <th>Location</th>
+            <th>Estimate</th>
+            <th>Options</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.id }}</td>
+            <td>{{ report.year }}</td>
+            <td>{{ report.week_number }}</td>
+            <td>{{ report.customer }}</td>
+            <td>{{ report.estimate }}</td>
+            <td><button type="button" class="btn btn-outline-primary btn-sm"><a href="/report/{{report.id}}">View</a></button></td>
+            <td><button type="button" class="btn btn-outline-warning btn-sm">Edit</button></td>
+            <td><button type="button" class="btn btn-outline-danger btn-sm">Delete</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock content %}
