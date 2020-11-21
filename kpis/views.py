@@ -1,3 +1,6 @@
+from django.contrib.auth.models import User, auth
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
@@ -127,12 +130,14 @@ def report(request, pk):
 
     report = Report.objects.get(id=pk)
     customer = report.customer
+    customer_reports = Report.objects.filter(customer__customer_name=str(customer)).order_by('-year', '-week_number')
     week = report.week_number
     year = report.year
 
     context = {
         'report' : report,
         'customer' : customer,
+        'customer_reports' : customer_reports,
         'week' : week,
         'year' : year,
     }
@@ -151,59 +156,128 @@ def all_reports(request):
     return render(request, 'kpis/all_reports.html', context)
 
 
-
 def week(request, wk, yr):
     
     reports = Report.objects.filter(week_number=wk, year=yr).order_by('customer__customer_name')
     week_number = wk
     year = yr
-    prv_1year = yr - 1
 
-    #TOTALS
-    reports_revenue = reports.aggregate(Sum('revenue'))['revenue__sum']
-    reports_hs = reports.aggregate(Sum('headsets'))['headsets__sum']
-    reports_partner_share = reports.aggregate(Sum('partner_share'))['partner_share__sum']
-    reports_rhs = round(reports_revenue / reports_hs)
+    def prev_yr():
+        if yr == 1:
+            prev_yr = yr
+        else:
+            prev_yr = yr - 1
+        return prev_yr
 
-    ###Operating costs
-    reports_staff = reports.aggregate(Sum('staff_costs'))['staff_costs__sum']
-    reports_rent = reports.aggregate(Sum('rent_cost'))['rent_cost__sum']
-    reports_marketing = reports.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
-    reports_sundries = reports.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
-    reports_ops = reports_staff + reports_rent + reports_marketing + reports_sundries
+    def prev_wk():
+        if wk == 1:
+            prev_wk = week_number
+        else:
+            prev_wk = week_number - 1
+        return prev_wk
 
-    ###Contribution
-    reports_contr = reports_revenue - reports_ops - reports_partner_share
+    if reports:
+        reports_prev_wk = Report.objects.filter(week_number=prev_wk(), year=yr)
+        reports_prev_yr = Report.objects.filter(week_number=wk, year=prev_yr())
 
+        #TOTALS
+        reports_revenue = reports.aggregate(Sum('revenue'))['revenue__sum']
+        reports_hs = reports.aggregate(Sum('headsets'))['headsets__sum']
+        reports_partner_share = reports.aggregate(Sum('partner_share'))['partner_share__sum']
+        reports_rhs = round(reports_revenue / reports_hs)
+        reports_revenue_prev_wk = reports_prev_wk.aggregate(Sum('revenue'))['revenue__sum']
+        reports_revenue_prev_yr = reports_prev_yr.aggregate(Sum('revenue'))['revenue__sum']
+        def reports_rev_prev_wk_diff():
+            if type(reports_revenue_prev_wk) == int:
+                reports_rev_prev_wk_diff = round((reports_revenue/(reports_revenue_prev_wk)-1)*100)
+            else:
+                reports_rev_prev_wk_diff = "None"
+            return reports_rev_prev_wk_diff
+        def reports_rev_prev_yr_diff():
+            if type(reports_revenue_prev_yr) == int:
+                reports_rev_prev_yr_diff = round((reports_revenue/(reports_revenue_prev_yr)-1)*100)
+            else:
+                reports_rev_prev_yr_diff = "None"
+            return reports_rev_prev_yr_diff
 
-    ###Margin
-    reports_margin = round((reports_contr / reports_revenue)*100)
+        ###Operating costs
+        reports_staff = reports.aggregate(Sum('staff_costs'))['staff_costs__sum']
+        reports_rent = reports.aggregate(Sum('rent_cost'))['rent_cost__sum']
+        reports_marketing = reports.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
+        reports_sundries = reports.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
+        reports_ops = reports_staff + reports_rent + reports_marketing + reports_sundries
 
+        ###Contribution
+        reports_contr = reports_revenue - reports_ops - reports_partner_share
 
-    #Previous week's reports
-    prev_wk_reports = Report.objects.filter(week_number=wk-1, year=yr)
+        ###Margin
+        reports_margin = round((reports_contr / reports_revenue)*100)
+    
+    else:
+        reports_prev_wk = Report.objects.filter(week_number=prev_wk(), year=yr)
+
+        #TOTALS
+        reports_revenue = 0
+        reports_hs = 0
+        reports_partner_share = 0
+        reports_rhs = 0
+
+        ###Operating costs
+        reports_staff = 0
+        reports_rent = 0
+        reports_marketing = 0
+        reports_sundries = 0
+        reports_ops = 0
+
+        ###Contribution
+        reports_contr = 0
+
+        ###Margin
+        reports_margin = 0
 
     #ENTERTAINMENT CATEGORY
     rep_ent = reports.filter(customer__category__category_name="Entertainment")
-    rep_ent_rev = rep_ent.aggregate(Sum('revenue'))['revenue__sum']
-    rep_ent_hs = rep_ent.aggregate(Sum('headsets'))['headsets__sum']
-    rep_ent_rphs = round(rep_ent_rev / rep_ent_hs)
-    rep_ent_ps = rep_ent.aggregate(Sum('partner_share'))['partner_share__sum']
     
-    ###Operating costs
-    rep_ent_staff = rep_ent.aggregate(Sum('staff_costs'))['staff_costs__sum']
-    rep_ent_rent = rep_ent.aggregate(Sum('rent_cost'))['rent_cost__sum']
-    rep_ent_marketing = rep_ent.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
-    rep_ent_sundries = rep_ent.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
-    rep_ent_ops = rep_ent_staff + rep_ent_rent + rep_ent_marketing + rep_ent_sundries
+    if rep_ent:
+        rep_ent_rev = rep_ent.aggregate(Sum('revenue'))['revenue__sum']
+        rep_ent_hs = rep_ent.aggregate(Sum('headsets'))['headsets__sum']
+        rep_ent_rphs = round(rep_ent_rev / rep_ent_hs)
+        rep_ent_ps = rep_ent.aggregate(Sum('partner_share'))['partner_share__sum']
+        
+        ###Operating costs
+        rep_ent_staff = rep_ent.aggregate(Sum('staff_costs'))['staff_costs__sum']
+        rep_ent_rent = rep_ent.aggregate(Sum('rent_cost'))['rent_cost__sum']
+        rep_ent_marketing = rep_ent.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
+        rep_ent_sundries = rep_ent.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
+        rep_ent_ops = rep_ent_staff + rep_ent_rent + rep_ent_marketing + rep_ent_sundries
 
-    ###Contribution
-    rep_ent_contr = rep_ent_rev - rep_ent_ps - rep_ent_ops
-    rep_ent_contr_hs = round(rep_ent_contr / rep_ent_hs)
+        ###Contribution
+        rep_ent_contr = rep_ent_rev - rep_ent_ps - rep_ent_ops
+        rep_ent_contr_hs = round(rep_ent_contr / rep_ent_hs)
 
-    ###Margin
-    rep_ent_margin = round((rep_ent_contr / rep_ent_rev)*100)
+        ###Margin
+        rep_ent_margin = round((rep_ent_contr / rep_ent_rev)*100)
+    
+    else:
+        rep_ent_rev = 0
+        rep_ent_hs = 0
+        rep_ent_rphs = 0
+        rep_ent_ps = 0
+        
+        ###Operating costs
+        rep_ent_staff = 0
+        rep_ent_rent = 0
+        rep_ent_marketing = 0
+        rep_ent_sundries = 0
+        rep_ent_ops = 0
 
+        ###Contribution
+        rep_ent_contr = 0
+        rep_ent_contr_hs = 0
+
+        ###Margin
+        rep_ent_margin = 0
+    
     #AQUARIUM CATEGORY
     rep_aqu = reports.filter(customer__category__category_name="Aquarium")
 
@@ -247,11 +321,13 @@ def week(request, wk, yr):
         ###Margin
         rep_aqu_margin = 0
 
-    context = { 'reports' : reports, 'week_number' : week_number, 'year' : year, 'prv_1year' : prv_1year,
+    context = { 'reports' : reports, 'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
                 'reports_revenue' : reports_revenue, 'reports_contr' : reports_contr,
                 'reports_hs' : reports_hs, 'reports_rhs' : reports_rhs,
                 'reports_margin' : reports_margin,
-                'prev_wk_reports' : prev_wk_reports,
+                'reports_prev_wk' : reports_prev_wk, 'reports_revenue_prev_wk' : reports_revenue_prev_wk,
+                'reports_prev_yr' : reports_prev_yr, 'reports_revenue_prev_yr' : reports_revenue_prev_yr,
+                'reports_rev_prev_wk_diff' : reports_rev_prev_wk_diff, 'reports_rev_prev_yr_diff' : reports_rev_prev_yr_diff,
                 'rep_ent' : rep_ent, 'rep_ent_rev' : rep_ent_rev, 'rep_ent_hs' : rep_ent_hs,
                 'rep_ent_rphs' : rep_ent_rphs, 'rep_ent_ps' : rep_ent_ps,
                 'rep_ent_ops' : rep_ent_ops, 'rep_ent_contr' : rep_ent_contr,
@@ -277,3 +353,72 @@ def report_form(request):
         fail_note = 'Report not posted.'
         new_form = ReportForm()
         return render(request, 'kpis/report_form.html', {'report_form' : new_form, 'fail_note' : fail_note })
+    
+
+def show_customer(request, customer_slug):
+    context = {}
+
+    try:
+        customer = Customer.objects.get(slug=customer_slug)
+        customer_reports = Report.objects.filter(customer__customer_name=customer.customer_name)
+
+        
+        context['customer'] = customer
+        context['customer_reports'] = customer_reports
+    
+    except Customer.DoesNotExist:
+        context['customer'] = None
+    
+    return render(request, 'kpis/customer.html', context)
+
+def register(request):
+    if request.method == 'POST':
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        if password1 == password2:
+            if User.objects.filter(username=username).exists():
+                messages.info(request, 'Username taken')
+                return redirect('/register')
+            elif User.objects.filter(email=email).exists():
+                messages.info(request, 'Email taken')
+                return redirect('/register')
+            else:
+                user = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name=last_name)
+                user.save()
+                messages.info(request, 'User succesfully created!')
+                return redirect('/register')
+
+        else:
+            print('Password not matching')
+            return redirect('/register')
+
+    else:
+        return render(request, 'kpis/register.html')
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username, password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            return redirect("/all_reports")
+        else:
+            messages.info(request, 'Invalid credentials')
+            return redirect("login")
+
+    else:
+        return render(request, 'kpis/login.html')
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
+
+    

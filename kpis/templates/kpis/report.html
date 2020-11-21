@@ -3,28 +3,75 @@
 {% block content %}
 
 <h1 class="">{{ customer }}</h1>
-<h2 class="mb-4">Week: {{ week }} - {{ year }} </h2>
+<h3 class="">Week: {{ week }} - {{ year }}
+<button type="button" class="ml-2 btn btn-outline-warning btn-sm"><a href="/report/{{report.id}}">Edit</a></button>
+<button type="button" class="btn btn-outline-danger btn-sm"><a href="/report/{{report.id}}">Delete</a></button>
+</h3>
 
-    <table class="table">
+
+<table class="table text-uppercase small mt-4">
+    <tr>
+        <th>Week</th>
+        <th>Revenue</th>
+        <th>Headsets</th>
+        <th>Rev/HS</th>
+        <th>Staff</th>
+        <th>Rent</th>
+        <th>Marketing</th>
+        <th>Sundries</th>
+        <th>Contribution</th>
+        <th>Cont/HS</th>
+        <th></th>
+
+    </tr>
+    <tr>
+        <td>{{ report.week_number }}</td>
+        <td>{{ report.revenue }}</td>
+        <td>{{ report.headsets }}</td>
+        <td>{{ report.revenue_per_headset }}</td>
+        <td>{{ report.staff_costs }}</td>
+        <td>{{ report.rent_cost }}</td>
+        <td>{{ report.marketing_cost }}</td>
+        <td>{{ report.sundries_cost }}</td>
+        <td>{{ report.contribution}}</td>
+        <td>{{ report.contribution_per_headset}}</td>
+        <td></td>
+    </tr>
+</table>
+
+<h3 class="">Other Weeks</h3>
+<h6 class="">Graph coming soon</h6>
+
+<table class="table text-uppercase small">
+    <tr>
+        <th>Week</th>
+        <th>Revenue</th>
+        <th>Headsets</th>
+        <th>Rev/HS</th>
+        <th>Staff</th>
+        <th>Rent</th>
+        <th>Marketing</th>
+        <th>Sundries</th>
+        <th>Contribution</th>
+        <th>Cont/HS</th>
+    </tr>
+
+    {% for report in customer_reports %}
         <tr>
-            <th>Revenue</th>
-            <th>Headsets</th>
-            <th>Rev/HS</th>
-            <th>Staff</th>
-            <th>Marketing</th>
-            <th>Contribution</th>
-            <th></th>
-        </tr>
-        <tr>
+            <td>{{ report.week_number }}</td>
             <td>{{ report.revenue }}</td>
             <td>{{ report.headsets }}</td>
             <td>{{ report.revenue_per_headset }}</td>
             <td>{{ report.staff_costs }}</td>
+            <td>{{ report.rent_cost }}</td>
             <td>{{ report.marketing_cost }}</td>
+            <td>{{ report.sundries_cost }}</td>
             <td>{{ report.contribution}}</td>
-            <td></td>
+            <td>{{ report.contribution_per_headset}}</td>
+        <td></td>
         </tr>
-    </table>
+    {% endfor %}
 
+</table>
 
 {% endblock content %}

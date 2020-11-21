@@ -33,12 +33,12 @@ header,
   min-height: 60vh;
 }
 
-#footer {
+/* #footer {
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 2.5rem;
-}
+} */
 
 h1, h2, h3, h4, h5, h6, p, table, nav, footer {
   font-family: 'Montserrat', sans-serif;
@@ -46,6 +46,7 @@ h1, h2, h3, h4, h5, h6, p, table, nav, footer {
 
 table {
     border-collapse: collapse;
+    width: 100%;
 }
 
 td, th {
@@ -55,6 +56,10 @@ td, th {
 
 th {
     font-weight: bold;
+}
+
+.login-container {
+  float: right;
 }
 
 /*

@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
@@ -34,8 +35,12 @@ class Customer(models.Model):
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    active = models.BooleanField(blank=True)
+    active = models.BooleanField(blank=True, default=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)   
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.customer_name)
+        super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.customer_name

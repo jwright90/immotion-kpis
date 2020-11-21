@@ -5,200 +5,210 @@
 
 {% block content %}
 
-<div class="container">
+{% if user.is_authenticated %}
 
-    <div class="row">
-        <div class="card col-lg m-1 border-0 text-center">
-            <div class="card-body">
-                <h4 class="display-4 font-weight-bold">KPI Report <br> Week {{ week_number }} - {{ year }}</h4>
+    <div class="container">
+
+        <div class="row">
+            <div class="card col-lg m-1 border-0 text-center">
+                <div class="card-body">
+                    <h4 class="display-4 font-weight-bold">KPI Report <br> Week {{ week_number }} - {{ year }}</h4>
+                </div>
             </div>
         </div>
+
+        <div class="row"><br></div>
+
+        <div class="row">
+
+            <div class="card col-md m-1 ">
+                <div class="card-body col">
+                    <h6>Net revenue <br> (£ GBP)</h6><h2>{{ reports_revenue|intcomma }}</h2>
+                </div>
+                <table class="table small">
+                    <thead>
+                        <th>Vs.</th>
+                        <th>+/- (%)</th>
+                    </thead>
+                    <tr>
+                        <th>Last week</th>
+                        <th>{{ reports_rev_prev_wk_diff|intcomma}}</th>
+                    </tr>
+                    <tr>
+                        <th>Last year</th>
+                        <th>{{ reports_rev_prev_yr_diff|intcomma }}</th>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card col-lg m-1">
+                <div class="card-body">
+                    <h6>Headsets in operation</h6><h2>{{ reports_hs|intcomma }}</h2>
+                </div>
+                <table class="table small">
+                    <tr class="">
+                        <th></th>
+                        <th>{{prev_yr}}</th>
+                        <th>{{year}}</th>
+                    </tr>
+                    <tr class="">
+                        <th>IVR</th>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="">
+                        <th>Partner</th>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card col m-1">
+                <div class="card-body">
+                    <h6>Revenue per headset</h6><h2>{{ reports_rhs|intcomma }}</h2>
+                </div>
+                <table class="table small">
+                    <tr class="">
+                        <th>IVR</th>
+                        <td></td>
+                    </tr>
+                    <tr class="">
+                        <th>Aquarium</th>
+                        <td>{{ rep_aqu_rphs }}</td>
+                    </tr>
+                    <tr class="">
+                        <th>Entertainment</th>
+                        <td>{{ rep_ent_rphs }}</td>
+                    </tr>
+
+                    <tr class="">
+                        <th>Other</th>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card col m-1">
+                <div class="card-body">
+                    <h6>Margin</h6><h2>{{ reports_margin|intcomma }}%</h2>
+                </div>
+                <table class="table small">
+                    <tr class="">
+                        <th>IVR</th>
+                        <td></td>
+                    </tr>
+                    <tr class="">
+                        <th>Aquarium</th>
+                        <td>{{ rep_aqu_margin }}%</td>
+                    </tr>
+                    <tr class="">
+                        <th>Entertainment</th>
+                        <td>{{ rep_ent_margin }}%</td>
+                    </tr>
+
+                    <tr class="">
+                        <th>Other</th>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <br>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <table class="table table-responsive text-uppercase small">
+                    <thead class="thead-dark ">
+                        <tr>
+                            <th></th>
+                            <th>Revenue</th>
+                            <th>Headsets</th>
+                            <th>Rev / HS </th>
+                            <th>Partner Share</th>
+                            <th>Operating Costs</th>
+                            <th>Contribution</th>
+                            <th>Cont / HS </th>
+                            <th>Margin</th>
+                        </tr>
+                    </thead>
+
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Category</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tr>
+                        <td>Aquarium</td>
+                        <td>{{ rep_aqu_rev|intcomma }}</td>
+                        <td>{{ rep_aqu_hs }}</td>
+                        <td>{{ rep_aqu_rphs }}</td>
+                        <td>{{ rep_aqu_ps|intcomma }}</td>
+                        <td>{{ rep_aqu_ops|intcomma }}</td>
+                        <td>{{ rep_aqu_contr|intcomma }}</td>
+                        <td>{{ rep_aqu_contr_hs|intcomma }}</td>
+                        <td>{{ rep_aqu_margin|intcomma }}%</td>
+                    </tr>
+
+                    <tr>
+                        <td>Entertainment</td>
+                        <td>{{ rep_ent_rev|intcomma }}</td>
+                        <td>{{ rep_ent_hs }}</td>
+                        <td>{{ rep_ent_rphs }}</td>
+                        <td>{{ rep_ent_ps|intcomma }}</td>
+                        <td>{{ rep_ent_ops|intcomma }}</td>
+                        <td>{{ rep_ent_contr|intcomma }}</td>
+                        <td>{{ rep_ent_contr_hs|intcomma }}</td>
+                        <td>{{ rep_ent_margin|intcomma }}%</td>
+                    </tr>
+
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Location</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    {% for report in reports %}
+                        <tr>
+                            <td><a href="/{{report.customer|slugify }}">{{ report.customer }}</a></td>
+                            <td>{{ report.revenue|intcomma }}</td>
+                            <td>{{ report.headsets }}</td>
+                            <td>{{ report.revenue_per_headset }}</td>
+                            <td>{{ report.partner_share }}</td>
+                            <td>{{ report.operating_costs }}</td>
+                            <td>{{ report.contribution }}</td>
+                            <td>{{ report.contribution_per_headset }}</td>
+                            <td>{{ report.margin }}%</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <br>
     </div>
 
-    <div class="row"><br></div>
+{% else %}
 
-    <div class="row">
+    <p>Please login to view this page.</p>
 
-        <div class="card col-lg m-1 ">
-            <div class="card-body col">
-                <h6>Net revenue <br> (£ GBP)</h6><h2>{{ reports_revenue|intcomma }}</h2>
-            </div>
-            <table class="table small">
-                <thead>
-                    <th>Vs.</th>
-                    <th>+/-</th>
-                </thead>
-                <tr>
-                    <th>Last week</th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th>Last year</th>
-                    <th></th>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card col-lg m-1">
-            <div class="card-body">
-                <h6>Headsets in operation</h6><h2>{{ reports_hs|intcomma }}</h2>
-            </div>
-            <table class="table small">
-                <tr class="">
-                    <th></th>
-                    <th>{{prv_1year}}</th>
-                    <th>{{year}}</th>
-                </tr>
-                <tr class="">
-                    <th>IVR</th>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="">
-                    <th>Partner</th>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card col-lg m-1">
-            <div class="card-body">
-                <h6>Revenue per headset</h6><h2>{{ reports_rhs|intcomma }}</h2>
-            </div>
-            <table class="table small">
-                <tr class="">
-                    <th>IVR</th>
-                    <td></td>
-                </tr>
-                <tr class="">
-                    <th>Aquarium</th>
-                    <td>{{ rep_aqu_rphs }}</td>
-                </tr>
-                <tr class="">
-                    <th>Entertainment</th>
-                    <td>{{ rep_ent_rphs }}</td>
-                </tr>
-
-                <tr class="">
-                    <th>Other</th>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="card col-lg m-1">
-            <div class="card-body">
-                <h6>Margin</h6><h2>{{ reports_margin|intcomma }}%</h2>
-            </div>
-            <table class="table small">
-                <tr class="">
-                    <th>IVR</th>
-                    <td></td>
-                </tr>
-                <tr class="">
-                    <th>Aquarium</th>
-                    <td>{{ rep_aqu_margin }}%</td>
-                </tr>
-                <tr class="">
-                    <th>Entertainment</th>
-                    <td>{{ rep_ent_margin }}%</td>
-                </tr>
-
-                <tr class="">
-                    <th>Other</th>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-</div>
-
-<br>
-
-<table class="table text-uppercase small">
-    <thead class="thead-dark ">
-        <tr>
-            <th></th>
-            <th>Revenue</th>
-            <th>Headsets</th>
-            <th>Rev / HS </th>
-            <th>Partner Share</th>
-            <th>Operating Costs</th>
-            <th>Contribution</th>
-            <th>Cont / HS </th>
-            <th>Margin</th>
-        </tr>
-    </thead>
-
-    <thead class="thead-light">
-        <tr>
-            <th>Category</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-
-    <tr>
-        <td>Aquarium</td>
-        <td>{{ rep_aqu_rev|intcomma }}</td>
-        <td>{{ rep_aqu_hs }}</td>
-        <td>{{ rep_aqu_rphs }}</td>
-        <td>{{ rep_aqu_ps|intcomma }}</td>
-        <td>{{ rep_aqu_ops|intcomma }}</td>
-        <td>{{ rep_aqu_contr|intcomma }}</td>
-        <td>{{ rep_aqu_contr_hs|intcomma }}</td>
-        <td>{{ rep_aqu_margin|intcomma }}%</td>
-    </tr>
-
-    <tr>
-        <td>Entertainment</td>
-        <td>{{ rep_ent_rev|intcomma }}</td>
-        <td>{{ rep_ent_hs }}</td>
-        <td>{{ rep_ent_rphs }}</td>
-        <td>{{ rep_ent_ps|intcomma }}</td>
-        <td>{{ rep_ent_ops|intcomma }}</td>
-        <td>{{ rep_ent_contr|intcomma }}</td>
-        <td>{{ rep_ent_contr_hs|intcomma }}</td>
-        <td>{{ rep_ent_margin|intcomma }}%</td>
-    </tr>
-
-    <thead class="thead-light">
-        <tr>
-            <th>Location</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-
-    {% for report in reports %}
-        <tr>
-            <td><a href="/report/{{report.id}}">{{ report.customer }}</a></td>
-            <td>{{ report.revenue|intcomma }}</td>
-            <td>{{ report.headsets }}</td>
-            <td>{{ report.revenue_per_headset }}</td>
-            <td>{{ report.partner_share }}</td>
-            <td>{{ report.operating_costs }}</td>
-            <td>{{ report.contribution }}</td>
-            <td>{{ report.contribution_per_headset }}</td>
-            <td>{{ report.margin }}%</td>
-        </tr>
-    {% endfor %}
-</table>
-
-<br>
+{% endif %}
 
 {% endblock%}

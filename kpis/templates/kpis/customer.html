@@ -1,0 +1,43 @@
+{% extends "kpis/base.html" %}
+
+{% block content %}
+
+<h1 class="">{{ customer }}</h1>
+
+<h3 class="my-4">Weekly Reports</h3>
+
+<table class="table text-uppercase small">
+    <tr>
+        <th>Week</th>
+        <th>Revenue</th>
+        <th>Headsets</th>
+        <th>Rev/HS</th>
+        <th>Staff</th>
+        <th>Rent</th>
+        <th>Marketing</th>
+        <th>Sundries</th>
+        <th>Contribution</th>
+        <th>Cont/HS</th>
+    </tr>
+
+    {% for report in customer_reports %}
+        <tr>
+            <td>{{ report.week_number }}</td>
+            <td>{{ report.revenue }}</td>
+            <td>{{ report.headsets }}</td>
+            <td>{{ report.revenue_per_headset }}</td>
+            <td>{{ report.staff_costs }}</td>
+            <td>{{ report.rent_cost }}</td>
+            <td>{{ report.marketing_cost }}</td>
+            <td>{{ report.sundries_cost }}</td>
+            <td>{{ report.contribution}}</td>
+            <td>{{ report.contribution_per_headset}}</td>
+        <td></td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+<h4 class="">Graph coming soon</h4>
+
+{% endblock content %}
