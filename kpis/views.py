@@ -4,14 +4,18 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
-from django.db.models import Sum, Avg
+from django.db.models import Sum, Avg, Count
 from .models import *
 from .forms import ReportForm
 from .filters import ReportFilter
-import math, string
+import math, string, requests, json
+from requests.exceptions import HTTPError
 
 
 def index(request):
+
+    fx_rates = requests.get('https://api.exchangeratesapi.io/latest?symbols=USD,EUR,CNY,AUD&base=GBP')
+    
     reports_list = Report.objects.order_by('-year', 'week_number')
     reports_revenue = Report.objects.aggregate(Sum('revenue'))
     reports_partner_share = Report.objects.aggregate(Sum('partner_share'))
@@ -20,9 +24,12 @@ def index(request):
     yearly_reports = {}
     for rep in reports_list:
         if yearly_reports.get(rep.year):
+            #If the report year exists within the yearly reports dictionary, then
             yearly_reports[rep.year].append(rep)
+                #Append the Report object to the key with value of report year
         else:
             yearly_reports[rep.year] = [rep]
+            # Inserts rep.year as key with the Report object as a value
 
     the_reports = [{"year": k, "report": v} for k, v in yearly_reports.items()]
 
@@ -39,12 +46,38 @@ def index(request):
                         't_revenue' : reports_revenue['revenue__sum'], 
                         't_partner_share' : reports_partner_share['partner_share__sum'],
                         't_contribution' : reports_contribution,
+                        'fx_rates' : fx_rates,
     }
 
     #print to see what is inside variable
 
     return render(request, 'kpis/index.html', context=reports_dict)
 
+def weekly(request, yr):
+    reports = Report.objects.all().filter(year=yr)
+    year = yr
+    weekly_reports = {}
+    weekly_revenues = {}
+    weekly_headsets = {}
+
+    for i in range(1, 54):
+        if reports.filter(week_number=i):
+            weekly_reports[i] = reports.filter(week_number=i)
+            weekly_revenues[i] = reports.filter(week_number=i).aggregate(Sum('revenue'))['revenue__sum']
+            weekly_headsets[i] = reports.filter(week_number=i).aggregate(Sum('headsets'))['headsets__sum']
+        else:
+            pass
+
+    total_revenue = reports.aggregate(Sum('revenue'))['revenue__sum']
+
+    context = { 'weekly_reports' : weekly_reports,
+                'weekly_revenues' : weekly_revenues,
+                'weekly_headsets' : weekly_headsets,
+                'year' : year,
+                'total_revenue' : total_revenue
+                }
+
+    return render(request, 'kpis/weekly.html', context)
 
 def search(request):
 
@@ -342,17 +375,34 @@ def week(request, wk, yr):
 
 
 def report_form(request):
+    success_note = ''
+    fail_note = ''
+    customers = Customer.objects.all()
+    customer_fx_list = []
+
+    for customer in customers:
+        customer_fx_list.append({"customer" : customer.customer_name, "currency" : customer.currency, "headsets" : customer.default_headsets})
+
+    json_fx = json.dumps(customer_fx_list)
+
     if request.method == 'POST':
         filled_form = ReportForm(request.POST)
         if filled_form.is_valid():
             success_note = 'Report posted.'
             filled_form.save()
             new_form = ReportForm()
-            return render(request, 'kpis/report_form.html', {'report_form' : new_form, 'success_note' : success_note})
+            return render(request, 'kpis/report_form.html', 
+            {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+            'json_fx' : json_fx,
+            'report_form' : new_form, 'success_note' : success_note})
+        else:
+            fail_note = 'Report not posted.'
     else:
-        fail_note = 'Report not posted.'
         new_form = ReportForm()
-        return render(request, 'kpis/report_form.html', {'report_form' : new_form, 'fail_note' : fail_note })
+        return render(request, 'kpis/report_form.html', 
+        {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+        'json_fx' : json_fx,
+        'report_form' : new_form, 'fail_note' : fail_note })
     
 
 def show_customer(request, customer_slug):
@@ -360,7 +410,7 @@ def show_customer(request, customer_slug):
 
     try:
         customer = Customer.objects.get(slug=customer_slug)
-        customer_reports = Report.objects.filter(customer__customer_name=customer.customer_name)
+        customer_reports = Report.objects.filter(customer__customer_name=customer.customer_name).order_by('-year','-week_number')
 
         
         context['customer'] = customer

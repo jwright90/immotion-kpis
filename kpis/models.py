@@ -32,6 +32,7 @@ class Customer(models.Model):
     )
 
     customer_name = models.CharField(max_length=30)
+    default_headsets = models.PositiveIntegerField(blank=True, null=True)
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -64,6 +65,8 @@ class Report(models.Model):
     headsets = models.PositiveIntegerField()
     gameplays = models.PositiveIntegerField(null=True, blank=True)
     customer_report_received = models.BooleanField(default=False)
+    base_revenue = models.IntegerField(blank=True, null=True)
+    fx_rate = models.FloatField(blank=True, null=True)
     revenue = models.IntegerField()
     estimate = models.BooleanField(default=False)
     partner_share = models.PositiveIntegerField(default=0)

@@ -32,23 +32,11 @@
 
     </ul>
     <ul class="navbar-nav">
-      {% comment %} <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Account
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Login</a>
-          <a class="dropdown-item" href="#">Register</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Forgotten password?</a>
-        </div>
-      </li> {% endcomment %}
       {% if user.is_authenticated %}
         <li class="nav-item navbar-text">Hello, {{ user.first_name }}: </li>
         <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
       {% else %}
         <li class="nav-item"><a class="nav-link" href="/login">Login / Register</a></li>
-
       {% endif %}
     </ul>
   </div>

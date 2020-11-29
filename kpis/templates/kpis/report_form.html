@@ -1,16 +1,185 @@
 {% extends 'kpis/base.html' %}
 
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
 <h4>{{ success_note }}</h4>
 <h4>{{ fail_note }}</h4>
 
+<h3>New Report</h3>
+
+<div class="form-wrapper mt-4">
     <form enctype="mutlipart/form-data" action="" method="POST">
         {% csrf_token %}
-        {{ report_form.as_p }}
-        <input type="submit" value="Submit">
+        <div class="row">
+            <div class="col-md-6">
+                {{report_form.customer|as_crispy_field}}
+            </div>
+            <div class="col-md">
+                {{report_form.year|as_crispy_field}}
+            </div>
+            <div class="col-md">
+                {{report_form.week_number|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{report_form.base_revenue|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.headsets|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.gameplays|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{report_form.revenue|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.fx_rate|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.partner_share|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                {{report_form.staff_costs|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.rent_cost|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.marketing_cost|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.sundries_cost|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3">
+                {{report_form.customer_report_received|as_crispy_field}}
+            </div>
+            <div class="col-md-3">
+                {{report_form.estimate|as_crispy_field}}
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-12">
+                <input type="submit" value="Submit">
+            </div>
+        </div>
     </form>
+</div>
+
+</br>
+
+<div class="work-in-progress">
+
+    <h5>Todo</h5>
+        <ul>
+            <li>Create Javascript object using Python dictionary, with customer name and currency.</li>
+            <li>On event handler for the customer to be selected</li>
+            <li>Once customer selected, set the currency variable to customer currency</li>
+            <li>Lookup the FX rate based on currency</li>
+        </ul>
+    
+    </br>
+
+    <h5>Headsets</h5>
+        <p>Do the same above but for default number of headsets</p>
+    
+    </br>
+
+    <h5>Step 1. Javascript Objects Array</h5>
+        <p class="text-uppercase small">{{json_fx|safe}}</p>
+</div>
+
+<p id="jsArray"></p>
+<p id="jsCurrency"></p>
+<p id="jsHeadsets"></p>
+<p id="jsCustomer"></p>
+
+<script>
+// JS Array from Python backend
+var jsArray = {{ json_fx|safe }};
+
+// Get customer from selection then get the currency
+function setCustomer() {
+    let e = document.getElementById("id_customer")
+    fCustomer = e.options[e.selectedIndex].innerHTML;
+    document.getElementById("jsCustomer").innerHTML = fCustomer
+
+    var customerObj = jsArray.filter(getAttr);
+
+    function getAttr(value, index, array) {
+        return value.customer === fCustomer;
+    }
+    
+    fx_currency = customerObj[0].currency;
+    headsets = customerObj[0].headsets;
+    document.getElementById("jsCurrency").innerHTML = fx_currency;
+    
+    document.getElementById("id_headsets").value = headsets;
+
+    async function fetchFxRates() {
+        const response = await fetch('https://api.exchangeratesapi.io/latest?symbols=USD,EUR,CNY,AUD&base=GBP');
+        const fxRates = await response.json();
+
+        if (fx_currency == "USD") {
+            document.getElementById("id_fx_rate").value = fxRates.rates.USD
+        } else if (fx_currency == "EUR") {
+            document.getElementById("id_fx_rate").value = fxRates.rates.EUR
+        } else if (fx_currency == "AED") {
+            document.getElementById("id_fx_rate").value = fxRates.rates.USD * 3.67
+        } else if (fx_currency == "CNY") {
+            document.getElementById("id_fx_rate").value = fxRates.rates.CNY
+        } else if (fx_currency == "AUD") {
+            document.getElementById("id_fx_rate").value = fxRates.rates.AUD
+        } else if (fx_currency == "GBP") {
+            document.getElementById("id_fx_rate").value = 1
+        } else {
+            document.getElementById("id_fx_rate").value = 1
+            // alert("No currency available, please enter currency in admin-panel.")
+        }
+        
+        console.log(fxRates.rates);
+    }
+
+    fetchFxRates();
+
+    document.getElementById("id_base_revenue").value = "";
+    document.getElementById("id_revenue").value = "";
+    document.getElementById("id_partner_share").value = "";
+}
+
+document.getElementById("id_customer").addEventListener("input", setCustomer);
+
+var fxRate;
+
+// Calculate GBP based on FX rate and base revenue
+function calcGbpRevenue() {
+    let gbpRev = Math.round(document.getElementById("id_base_revenue").value / document.getElementById("id_fx_rate").value);
+    document.getElementById("id_revenue").value = gbpRev
+}
+
+document.getElementById("id_base_revenue").addEventListener("keyup", calcGbpRevenue);
+document.getElementById("id_fx_rate").addEventListener("keyup", calcGbpRevenue);
+
+// Partner share
+function calcPartnerShare() {
+    let partnerShare = Math.round(document.getElementById("id_revenue").value / 2);
+    document.getElementById("id_partner_share").value = partnerShare;
+}
+
+document.getElementById("id_base_revenue").addEventListener("keyup", calcPartnerShare);
+document.getElementById("id_fx_rate").addEventListener("keyup", calcPartnerShare);
+
+</script>
 
 {% endblock %}
+
