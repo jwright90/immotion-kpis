@@ -375,8 +375,6 @@ def week(request, wk, yr):
 
 
 def report_form(request):
-    success_note = ''
-    fail_note = ''
     customers = Customer.objects.all()
     customer_fx_list = []
 
@@ -388,21 +386,30 @@ def report_form(request):
     if request.method == 'POST':
         filled_form = ReportForm(request.POST)
         if filled_form.is_valid():
-            success_note = 'Report posted.'
+            success_note = 'Success! The report has been posted.'
             filled_form.save()
             new_form = ReportForm()
             return render(request, 'kpis/report_form.html', 
             {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+            'success_note' : success_note,
             'json_fx' : json_fx,
             'report_form' : new_form, 'success_note' : success_note})
         else:
-            fail_note = 'Report not posted.'
+            fail_note = 'Error: Report not posted, please check whether the report already exists for this week.'
+            new_form = ReportForm()
+            return render(request, 'kpis/report_form.html', 
+            {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+            'fail_note' : fail_note,
+            'json_fx' : json_fx,
+            'report_form' : new_form })
+
     else:
         new_form = ReportForm()
         return render(request, 'kpis/report_form.html', 
         {'customers' : customers, 'customer_fx_list' : customer_fx_list,
         'json_fx' : json_fx,
-        'report_form' : new_form, 'fail_note' : fail_note })
+        'report_form' : new_form })
+
     
 
 def show_customer(request, customer_slug):

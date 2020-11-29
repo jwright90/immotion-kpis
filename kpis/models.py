@@ -64,7 +64,6 @@ class Report(models.Model):
     week_number = models.PositiveIntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)], default=default_week)
     headsets = models.PositiveIntegerField()
     gameplays = models.PositiveIntegerField(null=True, blank=True)
-    customer_report_received = models.BooleanField(default=False, null=True, blank=True)
     base_revenue = models.IntegerField(blank=True, null=True)
     fx_rate = models.FloatField(blank=True, null=True)
     revenue = models.IntegerField()
