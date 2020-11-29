@@ -4,7 +4,7 @@ from .models import Report, Customer, Category, Location
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
 	list_display = ('customer', 'year', 'week_number', 'revenue', 'partner_share', 'staff_costs')	
-	list_filter = ('year', 'week_number', 'customer_report_received')
+	list_filter = ('year', 'week_number', 'customer', 'customer_report_received', 'estimate')
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):

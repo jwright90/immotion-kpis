@@ -127,6 +127,7 @@ function setCustomer() {
     document.getElementById("id_headsets").value = headsets;
 
     async function fetchFxRates() {
+        // https://api.exchangeratesapi.io/history?start_at=2018-01-01&end_at=2018-09-01
         const response = await fetch('https://api.exchangeratesapi.io/latest?symbols=USD,EUR,CNY,AUD&base=GBP');
         const fxRates = await response.json();
 
@@ -155,6 +156,7 @@ function setCustomer() {
     document.getElementById("id_base_revenue").value = "";
     document.getElementById("id_revenue").value = "";
     document.getElementById("id_partner_share").value = "";
+    document.getElementById("id_base_revenue").focus();
 }
 
 document.getElementById("id_customer").addEventListener("input", setCustomer);

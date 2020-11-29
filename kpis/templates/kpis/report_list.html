@@ -1,8 +1,10 @@
 {% extends "kpis/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-
 {% load humanize %}
+
 
 <script>let tableData = {{ customer_tabledata|safe }};</script>
 
@@ -90,4 +92,4 @@
 
 {% endblock content %}
 
-<script src="{%static '/js/js/table.js' %}"></script>
+<script src="{%static '/js/js/table.js/' %}"></script>
