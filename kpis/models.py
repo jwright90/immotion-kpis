@@ -37,7 +37,8 @@ class Customer(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     active = models.BooleanField(blank=True, default=True)
-    currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)   
+    currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)
+    expected_rev_per_gp = models.FloatField(null=True, blank=True)   
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.customer_name)
@@ -64,15 +65,16 @@ class Report(models.Model):
     week_number = models.PositiveIntegerField(validators = [MinValueValidator(1), MaxValueValidator(53)], default=default_week)
     headsets = models.PositiveIntegerField()
     gameplays = models.PositiveIntegerField(null=True, blank=True)
-    base_revenue = models.IntegerField(blank=True, null=True)
+    base_revenue = models.PositiveIntegerField(blank=True, null=True)
     fx_rate = models.FloatField(blank=True, null=True)
-    revenue = models.IntegerField()
+    revenue = models.PositiveIntegerField()
     estimate = models.BooleanField(default=False)
     partner_share = models.PositiveIntegerField(default=0)
     staff_costs = models.PositiveIntegerField(default=0)
     rent_cost = models.PositiveIntegerField(default=0)
     marketing_cost = models.PositiveIntegerField(default=0)
     sundries_cost = models.PositiveIntegerField(default=0)
+    gameplay_variance = models.IntegerField(null=True, blank=True)
     
     def revenue_per_headset(self):
         return round(self.revenue / self.headsets)

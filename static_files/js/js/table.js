@@ -1,6 +1,5 @@
 let sortDirection = false;
-
-let obj_tableData = Object.entries(tableData);
+let objTableData = Object.entries(tableData);
 
 window.onload = () => {
     loadTableData(tableData);

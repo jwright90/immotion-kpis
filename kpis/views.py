@@ -379,7 +379,9 @@ def report_form(request):
     customer_fx_list = []
 
     for customer in customers:
-        customer_fx_list.append({"customer" : customer.customer_name, "currency" : customer.currency, "headsets" : customer.default_headsets})
+        customer_fx_list.append({"customer" : customer.customer_name, 
+        "currency" : customer.currency, "headsets" : customer.default_headsets,
+        "exp_rev_per_gp" : customer.expected_rev_per_gp})
 
     json_fx = json.dumps(customer_fx_list)
 
