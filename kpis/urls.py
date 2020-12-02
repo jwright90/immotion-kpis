@@ -10,6 +10,7 @@ urlpatterns = [
     path('week/<int:wk>/<int:yr>/', views.week, name='week'),
     path('weekly/<int:yr>/', views.weekly, name='weekly'),
     path('newreport', views.report_form, name='report_form'),
+    path('editreport/<int:pk>', views.update_report, name='update_report'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),

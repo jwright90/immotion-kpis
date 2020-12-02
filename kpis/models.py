@@ -33,6 +33,7 @@ class Customer(models.Model):
 
     customer_name = models.CharField(max_length=30)
     default_headsets = models.PositiveIntegerField(blank=True, null=True)
+    partner_share_perc = models.PositiveIntegerField(blank=True, null=True)
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -42,6 +43,8 @@ class Customer(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.customer_name)
+        if self.expected_rev_per_gp:
+            self.expected_rev_per_gp = round(self.expected_rev_per_gp, 2)
         super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -28,15 +28,15 @@
                 <table class="table small">
                     <thead>
                         <th>Vs.</th>
-                        <th>+/- (%)</th>
+                        <th>+/-</th>
                     </thead>
                     <tr>
                         <th>Last week</th>
-                        <th>{{ reports_rev_prev_wk_diff|intcomma}}</th>
+                        <td>{{ reports_rev_prev_wk_diff|intcomma}}%</td>
                     </tr>
                     <tr>
                         <th>Last year</th>
-                        <th>{{ reports_rev_prev_yr_diff|intcomma }}</th>
+                        <td>{{ reports_rev_prev_yr_diff|intcomma }}%</td>
                     </tr>
                 </table>
             </div>
@@ -117,7 +117,7 @@
 
         <br>
         <div class="row justify-content-center">
-            <div class="col-auto">
+            <div class="col-md-12">
                 <table class="table table-responsive text-uppercase small">
                     <thead class="thead-dark ">
                         <tr>
@@ -171,6 +171,32 @@
                         <td>{{ rep_ent_margin|intcomma }}%</td>
                     </tr>
 
+                    {% for report in mandalay_bay %}
+                        <tr>
+                            <td>{{ report.customer }}</a></td>
+                            <td>{{ report.revenue|intcomma }}</td>
+                            <td>{{ report.headsets }}</td>
+                            <td>{{ report.revenue_per_headset }}</td>
+                            <td>{{ report.partner_share }}</td>
+                            <td>{{ report.operating_costs }}</td>
+                            <td>{{ report.contribution }}</td>
+                            <td>{{ report.contribution_per_headset }}</td>
+                            <td>{{ report.margin }}%</td>
+                        </tr>
+                    {% endfor %}
+
+                    <tr>
+                        <th>Total</th>
+                        <th>{{ reports_revenue|intcomma }}</th>
+                        <th>{{ reports_hs }}</th>
+                        <th>{{ reports_rhs}}</th>
+                        <th>{{ reports_partner_share|intcomma }}</th>
+                        <th>{{ reports_ops|intcomma }}</th>
+                        <th>{{ reports_contr|intcomma }}</th>
+                        <th>{{ reports_contr_hs|intcomma }}</th>
+                        <th>{{ reports_margin|intcomma }}%</th>
+                    </tr>
+
                     <thead class="thead-light">
                         <tr>
                             <th>Location</th>
@@ -201,8 +227,6 @@
                 </table>
             </div>
         </div>
-
-        <br>
     </div>
 
 {% else %}

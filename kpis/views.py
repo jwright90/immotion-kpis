@@ -177,7 +177,6 @@ def report(request, pk):
 
     return render(request, 'kpis/report.html', context)
 
-
 def all_reports(request):
 
     reports = Report.objects.all().order_by('-estimate', '-year', '-week_number')
@@ -188,12 +187,13 @@ def all_reports(request):
 
     return render(request, 'kpis/all_reports.html', context)
 
-
 def week(request, wk, yr):
     
     reports = Report.objects.filter(week_number=wk, year=yr).order_by('customer__customer_name')
     week_number = wk
     year = yr
+
+    mandalay_bay = Report.objects.filter(week_number=wk, year=yr, customer__customer_name='Mandalay Bay')
 
     def prev_yr():
         if yr == 1:
@@ -242,18 +242,24 @@ def week(request, wk, yr):
 
         ###Contribution
         reports_contr = reports_revenue - reports_ops - reports_partner_share
+        reports_contr_hs = round(reports_contr / reports_hs)
 
         ###Margin
         reports_margin = round((reports_contr / reports_revenue)*100)
     
     else:
-        reports_prev_wk = Report.objects.filter(week_number=prev_wk(), year=yr)
+        reports_prev_wk = 0
+        reports_prev_yr = 0
 
         #TOTALS
         reports_revenue = 0
         reports_hs = 0
         reports_partner_share = 0
         reports_rhs = 0
+        reports_revenue_prev_wk = 0
+        reports_revenue_prev_yr = 0
+        reports_rev_prev_wk_diff = 0
+        reports_rev_prev_yr_diff = 0
 
         ###Operating costs
         reports_staff = 0
@@ -264,6 +270,7 @@ def week(request, wk, yr):
 
         ###Contribution
         reports_contr = 0
+        reports_contr_hs = 0
 
         ###Margin
         reports_margin = 0
@@ -355,9 +362,9 @@ def week(request, wk, yr):
         rep_aqu_margin = 0
 
     context = { 'reports' : reports, 'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
-                'reports_revenue' : reports_revenue, 'reports_contr' : reports_contr,
-                'reports_hs' : reports_hs, 'reports_rhs' : reports_rhs,
-                'reports_margin' : reports_margin,
+                'reports_revenue' : reports_revenue, 'reports_contr' : reports_contr, 'reports_partner_share' : reports_partner_share,
+                'reports_hs' : reports_hs, 'reports_rhs' : reports_rhs, 'reports_ops' : reports_ops,
+                'reports_contr_hs' : reports_contr_hs, 'reports_margin' : reports_margin,
                 'reports_prev_wk' : reports_prev_wk, 'reports_revenue_prev_wk' : reports_revenue_prev_wk,
                 'reports_prev_yr' : reports_prev_yr, 'reports_revenue_prev_yr' : reports_revenue_prev_yr,
                 'reports_rev_prev_wk_diff' : reports_rev_prev_wk_diff, 'reports_rev_prev_yr_diff' : reports_rev_prev_yr_diff,
@@ -369,19 +376,19 @@ def week(request, wk, yr):
                 'rep_aqu_rphs' : rep_aqu_rphs, 'rep_aqu_ps' : rep_aqu_ps,
                 'rep_aqu_ops' : rep_aqu_ops, 'rep_aqu_contr' : rep_aqu_contr,
                 'rep_aqu_contr_hs' : rep_aqu_contr_hs, 'rep_aqu_margin' : rep_aqu_margin,
+                'mandalay_bay' : mandalay_bay,
                  }
 
     return render(request, 'kpis/week.html', context)
 
-
 def report_form(request):
-    customers = Customer.objects.all()
+    customers = Customer.objects.all().order_by('customer_name')
     customer_fx_list = []
 
     for customer in customers:
         customer_fx_list.append({"customer" : customer.customer_name, 
         "currency" : customer.currency, "headsets" : customer.default_headsets,
-        "exp_rev_per_gp" : customer.expected_rev_per_gp})
+        "exp_rev_per_gp" : customer.expected_rev_per_gp, "partner_share_perc" : customer.partner_share_perc})
 
     json_fx = json.dumps(customer_fx_list)
 
@@ -412,7 +419,28 @@ def report_form(request):
         'json_fx' : json_fx,
         'report_form' : new_form })
 
+def update_report(request, pk):
+    customers = Customer.objects.all().order_by('customer_name')
+    customer_fx_list = []
+
+    for customer in customers:
+        customer_fx_list.append({"customer" : customer.customer_name, 
+        "currency" : customer.currency, "headsets" : customer.default_headsets,
+        "exp_rev_per_gp" : customer.expected_rev_per_gp, "partner_share_perc" : customer.partner_share_perc})
+
+    json_fx = json.dumps(customer_fx_list)
+
+    report = Report.objects.get(id=pk)
+    form = ReportForm(instance=report)
+
+    if request.method == 'POST':
+        form = ReportForm(request.POST, instance=report)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
     
+    context = {'customers' : customers, 'customer_fx_list' : customer_fx_list, 'json_fx' : json_fx, 'report_form' : form }
+    return render(request, 'kpis/edit_form.html', context)
 
 def show_customer(request, customer_slug):
     context = {}
