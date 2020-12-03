@@ -1,0 +1,16 @@
+{% extends "kpis/base.html" %}
+
+{% block content %}
+
+<h3>Delete report</h3>
+
+<p><strong>Are you sure you want to delete {{report.customer}} (Week {{report.week_number}} Year {{report.year}})?</strong></p>
+
+<form action={{report.id}} method="POST">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-danger" value="Delete">
+    <a href="/editreports" class="ml-2 btn btn-secondary">Cancel</a>
+</form>
+
+
+{% endblock content %}

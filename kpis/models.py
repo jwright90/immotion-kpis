@@ -1,9 +1,10 @@
+from datetime import datetime
 from django.db import models
-from django.template.defaultfilters import slugify
+from django.db.models import Sum, Avg, Count
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
-from datetime import datetime
+from django.template.defaultfilters import slugify
 
 class Category(models.Model):
     category_name = models.CharField(max_length=30)
@@ -29,6 +30,7 @@ class Customer(models.Model):
         ('RMB', 'RMB'),
         ('EUR', 'EUR'),
         ('AED', 'AED'),
+        ('AUD', 'AUD'),
     )
 
     customer_name = models.CharField(max_length=30)
@@ -39,7 +41,10 @@ class Customer(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     active = models.BooleanField(blank=True, default=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)
-    expected_rev_per_gp = models.FloatField(null=True, blank=True)   
+    expected_rev_per_gp = models.FloatField(null=True, blank=True)
+    accounts_contact_first_name = models.CharField(max_length=100, null=True, blank=True)
+    accounts_contact_last_name = models.CharField(max_length=100, null=True, blank=True)
+    accounts_contact_email = models.EmailField(null=True, blank=True)   
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.customer_name)

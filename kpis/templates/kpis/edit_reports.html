@@ -1,0 +1,30 @@
+{% extends "kpis/base.html" %}
+
+{% load humanize %}
+{% block content %}
+
+<h3 class="">Edit reports</h3>
+
+    <table class="table table-responsive text-uppercase small">
+        <thead class="thead-light ">
+            <th>Week</th>
+            <th>Year</th>
+            <th>Location</th>
+            <th>Revenue</th>
+            <th></th>
+            <th></th>
+        </thead>
+        {% for report in reports %}
+        <tr>
+            <td class="align-middle">{{ report.week_number }}</td>
+            <td class="align-middle">{{ report.year }}</td>
+            <td class="align-middle">{{ report.customer }}</td>
+            <td class="align-middle">{{ report.revenue|intcomma }}</td>
+            <td class="align-middle"><a type="button" href="/editreport/{{report.id}}" class="btn btn-warning btn-sm text-white">Edit</a></td>
+            <td class="align-middle"><a type="button" href="/deletereport/{{report.id}}" class="btn btn-danger btn-sm text-white">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock content %}

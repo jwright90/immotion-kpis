@@ -2,46 +2,26 @@
 
 {% block content %}
 
-<h1 class="">Home</h1>
-
     {% for yearly_report in yearly_reports %}
         <h5> Year {{ yearly_report.year }}</h5>
-        <table class="table">
-            <tr>
-                <th>
-                    Week#
-                </th>
-                <th>
-                    Site
-                </th>
-                <th>
-                    Revenue
-                </th>
-                <th>
-                    Partner Share
-                </th>
-                <th>
-                    Contribution
-                </th>
-            </tr>
+        <table class="table table-responsive text-uppercase small">
+            <thead class="thead-light ">
+                <th>Week#</th>
+                <th>Site</th>
+                <th>Revenue</th>
+                <th>Partner Share</th>
+                <th>Contribution</th>
+                <th>Report ID</th>
+            </thead>
             {% for report in yearly_report.report %}
 {#                    <h6>Week {{ report.week_number }}</h6>#}
             <tr>
-                <td>
-                    {{ report.week_number }}
-                </td>
-                <td>
-                    {{ report.customer }}
-                </td>
-                <td>
-                    {{ report.revenue }}
-                </td>
-                <td>
-                    {{ report.partner_share }}
-                </td>
-                <td>
-                    {{ report.contribution }}
-                </td>
+                <td> <a href="/week/{{report.week_number}}/{{report.year}}">{{ report.week_number }}</a> </td>
+                <td> <a href="/{{ report.customer|slugify }}">{{ report.customer }}</a> </td>
+                <td> {{ report.revenue }} </td>
+                <td> {{ report.partner_share }} </td>
+                <td> {{ report.contribution }}</td>
+                <td> {{ report.id }} </td>
             </tr>
             {% endfor %}
         </table>

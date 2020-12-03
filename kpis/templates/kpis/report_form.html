@@ -93,6 +93,8 @@
 <script>
 // JS Array from Python backend
 var jsArray = {{ json_fx|safe }};
+let initialWkNum = document.getElementById("id_week_number").value;
+let initialYr = document.getElementById("id_year").value;
 
 // Get customer from selection then get the currency
 function setCustomer() {
@@ -111,7 +113,6 @@ function setCustomer() {
     partnerSharePerc = customerObj[0].partner_share_perc;
     
     document.getElementById("id_headsets").value = headsets;
-
 
     //API call to get FX Rate
     async function fetchFxRates() {
@@ -209,7 +210,7 @@ function setCustomer() {
         } else if (fx_currency == "AED") {
 
             document.getElementById("id_fx_rate").value = (USDAvg * 3.67).toFixed(4);
-        } else if (fx_currency == "CNY") {
+        } else if (fx_currency == "RMB") {
             document.getElementById("id_fx_rate").value = CNYAvg.toFixed(4);
         } else if (fx_currency == "AUD") {
             document.getElementById("id_fx_rate").value = AUDAvg.toFixed(4);
@@ -245,14 +246,15 @@ function setCustomer() {
 
     document.getElementById("id_week_number").addEventListener("input", fetchFxRates);
     document.getElementById("id_year").addEventListener("input", fetchFxRates);
-
+    document.getElementById("id_customer").addEventListener("change", fetchFxRates);
+ 
     // Gameplay variance
     function calcVariance() {
         let gameplays = document.getElementById("id_gameplays").value;
         let revenue = document.getElementById("id_revenue").value;
         
         if (exp_rev_per_gp) {
-            document.getElementById("id_gameplay_variance").value = (revenue - (gameplays * exp_rev_per_gp));
+            document.getElementById("id_gameplay_variance").value = Math.round((revenue - (gameplays * exp_rev_per_gp)));
         } else {
             document.getElementById("id_gameplay_variance").value = null;
         }
@@ -260,12 +262,15 @@ function setCustomer() {
     }
 
     document.getElementById("id_gameplays").addEventListener("input", calcVariance);
+    document.getElementById("id_base_revenue").addEventListener("input", calcVariance);
 
     document.getElementById("id_base_revenue").value = "";
     document.getElementById("id_revenue").value = "";
     document.getElementById("id_partner_share").value = "";
     document.getElementById("id_gameplays").value = "";
     document.getElementById("id_gameplay_variance").value = "";
+    document.getElementById("id_week_number").value = initialWkNum;
+    document.getElementById("id_year").value = initialYr;
     document.getElementById("id_base_revenue").focus();
 
 }

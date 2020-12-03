@@ -13,10 +13,8 @@ from requests.exceptions import HTTPError
 
 
 def index(request):
-
-    fx_rates = requests.get('https://api.exchangeratesapi.io/latest?symbols=USD,EUR,CNY,AUD&base=GBP')
-    
-    reports_list = Report.objects.order_by('-year', 'week_number')
+   
+    reports_list = Report.objects.order_by('-year', '-week_number')
     reports_revenue = Report.objects.aggregate(Sum('revenue'))
     reports_partner_share = Report.objects.aggregate(Sum('partner_share'))
     reports_contribution = reports_revenue['revenue__sum'] - reports_partner_share['partner_share__sum']
@@ -46,7 +44,6 @@ def index(request):
                         't_revenue' : reports_revenue['revenue__sum'], 
                         't_partner_share' : reports_partner_share['partner_share__sum'],
                         't_contribution' : reports_contribution,
-                        'fx_rates' : fx_rates,
     }
 
     #print to see what is inside variable
@@ -177,7 +174,7 @@ def report(request, pk):
 
     return render(request, 'kpis/report.html', context)
 
-def all_reports(request):
+def edit_reports(request):
 
     reports = Report.objects.all().order_by('-estimate', '-year', '-week_number')
 
@@ -185,13 +182,30 @@ def all_reports(request):
         'reports' : reports,
     }
 
-    return render(request, 'kpis/all_reports.html', context)
+    return render(request, 'kpis/edit_reports.html', context)
+
+def delete_report(request, pk):
+
+    report = Report.objects.get(id=pk)
+
+    if request.method == 'POST':
+        report.delete()
+        return redirect('/editreports')
+
+    context = {
+        'report' : report,
+    }
+
+    return render(request, 'kpis/delete_report.html', context)
 
 def week(request, wk, yr):
     
     reports = Report.objects.filter(week_number=wk, year=yr).order_by('customer__customer_name')
     week_number = wk
     year = yr
+
+    next_week = week_number + 1
+    prev_week = week_number - 1
 
     mandalay_bay = Report.objects.filter(week_number=wk, year=yr, customer__customer_name='Mandalay Bay')
 
@@ -246,6 +260,9 @@ def week(request, wk, yr):
 
         ###Margin
         reports_margin = round((reports_contr / reports_revenue)*100)
+
+        ##Gameplays
+        reports_gameplays = reports.aggregate(Sum('gameplays'))['gameplays__sum']
     
     else:
         reports_prev_wk = 0
@@ -274,6 +291,9 @@ def week(request, wk, yr):
 
         ###Margin
         reports_margin = 0
+
+        ##Gameplays
+        reports_gameplays = 0
 
     #ENTERTAINMENT CATEGORY
     rep_ent = reports.filter(customer__category__category_name="Entertainment")
@@ -365,6 +385,7 @@ def week(request, wk, yr):
                 'reports_revenue' : reports_revenue, 'reports_contr' : reports_contr, 'reports_partner_share' : reports_partner_share,
                 'reports_hs' : reports_hs, 'reports_rhs' : reports_rhs, 'reports_ops' : reports_ops,
                 'reports_contr_hs' : reports_contr_hs, 'reports_margin' : reports_margin,
+                'reports_gameplays' : reports_gameplays,
                 'reports_prev_wk' : reports_prev_wk, 'reports_revenue_prev_wk' : reports_revenue_prev_wk,
                 'reports_prev_yr' : reports_prev_yr, 'reports_revenue_prev_yr' : reports_revenue_prev_yr,
                 'reports_rev_prev_wk_diff' : reports_rev_prev_wk_diff, 'reports_rev_prev_yr_diff' : reports_rev_prev_yr_diff,
@@ -377,6 +398,7 @@ def week(request, wk, yr):
                 'rep_aqu_ops' : rep_aqu_ops, 'rep_aqu_contr' : rep_aqu_contr,
                 'rep_aqu_contr_hs' : rep_aqu_contr_hs, 'rep_aqu_margin' : rep_aqu_margin,
                 'mandalay_bay' : mandalay_bay,
+                'prev_week' : prev_week, 'next_week' : next_week, 'year' : year,
                  }
 
     return render(request, 'kpis/week.html', context)

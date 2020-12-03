@@ -8,16 +8,29 @@
 {% if user.is_authenticated %}
 
     <div class="container">
-
-        <div class="row">
-            <div class="card col-lg m-1 border-0 text-center">
-                <div class="card-body">
-                    <h4 class="display-4 font-weight-bold">KPI Report <br> Week {{ week_number }} - {{ year }}</h4>
-                </div>
+        <div class="row justify-content-center arrow-row">
+            <div class="col-auto svg-container">
+                <a href="/week/{{prev_week}}/{{year}}">
+                    <svg width="3em" height="3em" viewBox="0 0 16 16" class="text-dark bi bi-arrow-left-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="card col-auto border-0">
+                    <div class="card-body">
+                        <h4 class="display-4 font-weight-bold text-center">KPI Report <br/> Week {{ week_number }} - {{ year }}</h4>
+                    </div>
+            </div>
+            <div class="col-auto svg-container">
+                <a href="/week/{{next_week}}/{{year}}">
+                    <svg width="3em" height="3em" viewBox="0 0 16 16" class="text-dark bi bi-arrow-right-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path fill-rule="evenodd" d="M4 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5A.5.5 0 0 0 4 8z"/>
+                    </svg>
+                </a>
             </div>
         </div>
-
-        <div class="row"><br></div>
 
         <div class="row">
 
@@ -119,23 +132,38 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <table class="table table-responsive text-uppercase small">
-                    <thead class="thead-dark ">
+                    <thead class="thead-dark">
                         <tr>
                             <th></th>
-                            <th>Revenue</th>
-                            <th>Headsets</th>
-                            <th>Rev / HS </th>
-                            <th>Partner Share</th>
-                            <th>Operating Costs</th>
-                            <th>Contribution</th>
-                            <th>Cont / HS </th>
-                            <th>Margin</th>
+                            <th class="align-middle">Revenue</th>
+                            <th class="align-middle">Headsets</th>
+                            <th class="align-middle">Rev / HS </th>
+                            <th class="align-middle">Partner Share</th>
+                            <th class="align-middle">Operating Costs</th>
+                            <th class="align-middle">Contribution</th>
+                            <th class="align-middle">Cont / HS </th>
+                            <th class="align-middle">Margin</th>
+                            <th class="align-middle">Gameplays</th>
                         </tr>
                     </thead>
+
+                    <tr>
+                        <td>Total</td>
+                        <td>{{ reports_revenue|intcomma }}</td>
+                        <td>{{ reports_hs }}</td>
+                        <td>{{ reports_rhs|intcomma}}</td>
+                        <td>{{ reports_partner_share|intcomma }}</td>
+                        <td>{{ reports_ops|intcomma }}</td>
+                        <td>{{ reports_contr|intcomma }}</td>
+                        <td>{{ reports_contr_hs|intcomma }}</td>
+                        <td>{{ reports_margin|intcomma }}%</td>
+                        <td>{{ reports_gameplays|intcomma }}</td>
+                    </tr>
 
                     <thead class="thead-light">
                         <tr>
                             <th>Category</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -151,24 +179,26 @@
                         <td>Aquarium</td>
                         <td>{{ rep_aqu_rev|intcomma }}</td>
                         <td>{{ rep_aqu_hs }}</td>
-                        <td>{{ rep_aqu_rphs }}</td>
+                        <td>{{ rep_aqu_rphs|intcomma }}</td>
                         <td>{{ rep_aqu_ps|intcomma }}</td>
                         <td>{{ rep_aqu_ops|intcomma }}</td>
                         <td>{{ rep_aqu_contr|intcomma }}</td>
                         <td>{{ rep_aqu_contr_hs|intcomma }}</td>
-                        <td>{{ rep_aqu_margin|intcomma }}%</td>
+                        <td>{{ rep_aqu_margin }}%</td>
+                        <td></td>
                     </tr>
 
                     <tr>
                         <td>Entertainment</td>
                         <td>{{ rep_ent_rev|intcomma }}</td>
                         <td>{{ rep_ent_hs }}</td>
-                        <td>{{ rep_ent_rphs }}</td>
+                        <td>{{ rep_ent_rphs|intcomma }}</td>
                         <td>{{ rep_ent_ps|intcomma }}</td>
                         <td>{{ rep_ent_ops|intcomma }}</td>
                         <td>{{ rep_ent_contr|intcomma }}</td>
                         <td>{{ rep_ent_contr_hs|intcomma }}</td>
                         <td>{{ rep_ent_margin|intcomma }}%</td>
+                        <td></td>
                     </tr>
 
                     {% for report in mandalay_bay %}
@@ -177,29 +207,19 @@
                             <td>{{ report.revenue|intcomma }}</td>
                             <td>{{ report.headsets }}</td>
                             <td>{{ report.revenue_per_headset }}</td>
-                            <td>{{ report.partner_share }}</td>
-                            <td>{{ report.operating_costs }}</td>
-                            <td>{{ report.contribution }}</td>
-                            <td>{{ report.contribution_per_headset }}</td>
+                            <td>{{ report.partner_share|intcomma }}</td>
+                            <td>{{ report.operating_costs|intcomma }}</td>
+                            <td>{{ report.contribution|intcomma }}</td>
+                            <td>{{ report.contribution_per_headset|intcomma }}</td>
                             <td>{{ report.margin }}%</td>
+                            <td></td>
                         </tr>
                     {% endfor %}
-
-                    <tr>
-                        <th>Total</th>
-                        <th>{{ reports_revenue|intcomma }}</th>
-                        <th>{{ reports_hs }}</th>
-                        <th>{{ reports_rhs}}</th>
-                        <th>{{ reports_partner_share|intcomma }}</th>
-                        <th>{{ reports_ops|intcomma }}</th>
-                        <th>{{ reports_contr|intcomma }}</th>
-                        <th>{{ reports_contr_hs|intcomma }}</th>
-                        <th>{{ reports_margin|intcomma }}%</th>
-                    </tr>
 
                     <thead class="thead-light">
                         <tr>
                             <th>Location</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -216,12 +236,14 @@
                             <td><a href="/{{report.customer|slugify }}">{{ report.customer }}</a></td>
                             <td>{{ report.revenue|intcomma }}</td>
                             <td>{{ report.headsets }}</td>
-                            <td>{{ report.revenue_per_headset }}</td>
-                            <td>{{ report.partner_share }}</td>
-                            <td>{{ report.operating_costs }}</td>
-                            <td>{{ report.contribution }}</td>
-                            <td>{{ report.contribution_per_headset }}</td>
+                            <td>{{ report.revenue_per_headset|intcomma }}</td>
+                            <td>{{ report.partner_share|intcomma }}</td>
+                            <td>{{ report.operating_costs|intcomma }}</td>
+                            <td>{{ report.contribution|intcomma }}</td>
+                            <td>{{ report.contribution_per_headset|intcomma }}</td>
                             <td>{{ report.margin }}%</td>
+                            <td>{{ report.gameplays }}</td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                 </table>
