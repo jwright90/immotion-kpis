@@ -104,3 +104,5 @@ class Report(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['customer', 'year', 'week_number'], name="unique_period")
         ]
+        
+        get_latest_by = 'year'

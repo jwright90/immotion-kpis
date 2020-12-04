@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
-from django.db.models import Sum, Avg, Count
+from django.db.models import Sum, Avg, Count, Max
 from .models import *
 from .forms import ReportForm
 from .filters import ReportFilter
@@ -18,6 +18,9 @@ def index(request):
     reports_revenue = Report.objects.aggregate(Sum('revenue'))
     reports_partner_share = Report.objects.aggregate(Sum('partner_share'))
     reports_contribution = reports_revenue['revenue__sum'] - reports_partner_share['partner_share__sum']
+
+    latest_year = reports_list.aggregate(Max('year'))['year__max']
+    latest_week = reports_list.filter(year=latest_year).aggregate(Max('week_number'))['week_number__max']
 
     yearly_reports = {}
     for rep in reports_list:
@@ -39,16 +42,18 @@ def index(request):
 
     the_weekly_reports = [{"week" : k, "report": v} for k, v in weekly_reports.items()]
 
-    reports_dict = {    'yearly_reports' : the_reports,
-                        'reports' : reports_list, 
-                        't_revenue' : reports_revenue['revenue__sum'], 
-                        't_partner_share' : reports_partner_share['partner_share__sum'],
-                        't_contribution' : reports_contribution,
+    context = { 'yearly_reports' : the_reports, 'reports' : reports_list, 
+                't_revenue' : reports_revenue['revenue__sum'], 
+                't_partner_share' : reports_partner_share['partner_share__sum'],
+                't_contribution' : reports_contribution,
+                'latest_year' : latest_year,
+                'latest_week' : latest_week,
+
     }
 
     #print to see what is inside variable
 
-    return render(request, 'kpis/index.html', context=reports_dict)
+    return render(request, 'kpis/index.html', context)
 
 def weekly(request, yr):
     reports = Report.objects.all().filter(year=yr)
@@ -201,6 +206,8 @@ def delete_report(request, pk):
 def week(request, wk, yr):
     
     reports = Report.objects.filter(week_number=wk, year=yr).order_by('customer__customer_name')
+    customers = Customer.objects.filter(active=True)
+    customer_headsets = customers.aggregate(Sum('default_headsets'))['default_headsets__sum']
     week_number = wk
     year = yr
 
@@ -226,6 +233,13 @@ def week(request, wk, yr):
     if reports:
         reports_prev_wk = Report.objects.filter(week_number=prev_wk(), year=yr)
         reports_prev_yr = Report.objects.filter(week_number=wk, year=prev_yr())
+
+        yearly_reports = Report.objects.filter(year=yr).order_by('customer__customer_name')
+        yearly_revenue = round(yearly_reports.aggregate(Sum('revenue'))['revenue__sum'])
+        weeks = list(dict.fromkeys(yearly_reports.values_list('week_number').order_by('week_number')))
+        num_weeks = len(weeks)
+        yearly_avg_rev = round(yearly_revenue / num_weeks)
+        wk_yr_avg_comparison = round((((reports.aggregate(Sum('revenue'))['revenue__sum'])/yearly_avg_rev) -1 ) * 100)
 
         #TOTALS
         reports_revenue = reports.aggregate(Sum('revenue'))['revenue__sum']
@@ -267,6 +281,13 @@ def week(request, wk, yr):
     else:
         reports_prev_wk = 0
         reports_prev_yr = 0
+
+        yearly_reports = 0
+        yearly_revenue = 0
+        weeks = 0
+        num_weeks = 0
+        yearly_avg_rev = 0
+        wk_yr_avg_comparison = 0
 
         #TOTALS
         reports_revenue = 0
@@ -381,7 +402,11 @@ def week(request, wk, yr):
         ###Margin
         rep_aqu_margin = 0
 
-    context = { 'reports' : reports, 'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
+    context = { 'reports' : reports, 'customers' : customers, 'customer_headsets' : customer_headsets,
+                'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
+                'yearly_reports' : yearly_reports, 'yearly_revenue' : yearly_revenue,
+                'weeks' : weeks, 'num_weeks' : num_weeks, 'yearly_avg_rev' : yearly_avg_rev,
+                'wk_yr_avg_comparison' : wk_yr_avg_comparison,
                 'reports_revenue' : reports_revenue, 'reports_contr' : reports_contr, 'reports_partner_share' : reports_partner_share,
                 'reports_hs' : reports_hs, 'reports_rhs' : reports_rhs, 'reports_ops' : reports_ops,
                 'reports_contr_hs' : reports_contr_hs, 'reports_margin' : reports_margin,

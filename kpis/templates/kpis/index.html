@@ -2,6 +2,42 @@
 
 {% block content %}
 
+    <h4 class="display-4 font-weight-bold">Immotion KPIs</h4>
+
+    <br>
+
+    <h5>View the latest report: 
+        <a href="/week/{{latest_week}}/{{latest_year}}">Wk {{latest_week}}, {{latest_year}}</a>
+    </h5>
+
+    <br>
+
+    <div class="row">
+        <div class="card m-1 p-3 col-auto">
+            <p><strong>To go on this page</strong></p>
+                <ul>
+                    <li><strike> Link to latest weekly report </strike></li>
+                    <li> Graph </li>    
+                    <li> YTD Statistics </li>
+                </ul>
+        </div>
+
+        <div class = "card m-1 p-3 col-auto">
+            <p><strong>Todo list</strong></p>
+            <ul>
+                <li>Fix weekly url links to not go below 1 or above 53</li>
+                <li>Finish navbar</li>
+                <li>Show revenues and partnershares for each partner view</li>
+            </ul>
+            <p><strong>Ideas</strong></p>
+            <ul>
+                <li>Create 'Sage Invoice' model to reconcile against</li>
+            </ul>
+        </div>
+    </div>
+
+    <br>
+
     {% for yearly_report in yearly_reports %}
         <h5> Year {{ yearly_report.year }}</h5>
         <table class="table table-responsive text-uppercase small">
@@ -11,7 +47,6 @@
                 <th>Revenue</th>
                 <th>Partner Share</th>
                 <th>Contribution</th>
-                <th>Report ID</th>
             </thead>
             {% for report in yearly_report.report %}
 {#                    <h6>Week {{ report.week_number }}</h6>#}
@@ -21,14 +56,10 @@
                 <td> {{ report.revenue }} </td>
                 <td> {{ report.partner_share }} </td>
                 <td> {{ report.contribution }}</td>
-                <td> {{ report.id }} </td>
             </tr>
             {% endfor %}
         </table>
         <hr> 
     {% endfor %}
-
-<p>Here's a <a href="/search">search tool</a> I also worked on.<p>
-
 
 {% endblock content %}

@@ -36,7 +36,7 @@
 
             <div class="card col-md m-1 ">
                 <div class="card-body col">
-                    <h6>Net revenue <br> (£ GBP)</h6><h2>{{ reports_revenue|intcomma }}</h2>
+                    <h6>Net revenue (£ GBP)</h6><h2>{{ reports_revenue|intcomma }}</h2>
                 </div>
                 <table class="table small">
                     <thead>
@@ -51,12 +51,20 @@
                         <th>Last year</th>
                         <td>{{ reports_rev_prev_yr_diff|intcomma }}%</td>
                     </tr>
+                    <tr>
+                        <th>YTD Avg</th>
+                        <td>{{wk_yr_avg_comparison|intcomma}}%</td>
+                    </tr>
                 </table>
             </div>
 
             <div class="card col-lg m-1">
                 <div class="card-body">
-                    <h6>Headsets in operation</h6><h2>{{ reports_hs|intcomma }}</h2>
+                    <h6>Headsets in operation</h6>
+                    <div>   <h2 class="d-inline">{{ reports_hs|intcomma }} </h2>
+                            <h5 class="d-inline mr-2">of </h5>
+                            <h2 class="d-inline"> {{customer_headsets}}</h2>
+                    </div>
                 </div>
                 <table class="table small">
                     <tr class="">
@@ -242,7 +250,7 @@
                             <td>{{ report.contribution|intcomma }}</td>
                             <td>{{ report.contribution_per_headset|intcomma }}</td>
                             <td>{{ report.margin }}%</td>
-                            <td>{{ report.gameplays }}</td>
+                            <td>{{ report.gameplays|intcomma }}</td>
                             <td></td>
                         </tr>
                     {% endfor %}
