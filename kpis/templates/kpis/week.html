@@ -10,7 +10,7 @@
     <div class="container">
         <div class="row justify-content-center arrow-row">
             <div class="col-auto svg-container">
-                <a href="/week/{{prev_week}}/{{year}}">
+                <a id="arrow-back" href="/week/{{prev_week}}/{{year}}">
                     <svg width="3em" height="3em" viewBox="0 0 16 16" class="text-dark bi bi-arrow-left-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                         <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
@@ -23,7 +23,7 @@
                     </div>
             </div>
             <div class="col-auto svg-container">
-                <a href="/week/{{next_week}}/{{year}}">
+                <a id="arrow-fwd" href="/week/{{next_week}}/{{year}}">
                     <svg width="3em" height="3em" viewBox="0 0 16 16" class="text-dark bi bi-arrow-right-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                         <path fill-rule="evenodd" d="M4 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5A.5.5 0 0 0 4 8z"/>
@@ -112,7 +112,7 @@
 
             <div class="card col m-1">
                 <div class="card-body">
-                    <h6>Margin</h6><h2>{{ reports_margin|intcomma }}%</h2>
+                    <h6>Estimates</h6><h2></h2>
                 </div>
                 <table class="table small">
                     <tr class="">
@@ -121,11 +121,11 @@
                     </tr>
                     <tr class="">
                         <th>Aquarium</th>
-                        <td>{{ rep_aqu_margin }}%</td>
+                        <td></td>
                     </tr>
                     <tr class="">
                         <th>Entertainment</th>
-                        <td>{{ rep_ent_margin }}%</td>
+                        <td></td>
                     </tr>
 
                     <tr class="">
@@ -143,15 +143,17 @@
                     <thead class="thead-dark">
                         <tr>
                             <th></th>
-                            <th class="align-middle">Revenue</th>
+                            <th class="align-middle">Revenue (£)</th>
                             <th class="align-middle">Headsets</th>
-                            <th class="align-middle">Rev / HS </th>
-                            <th class="align-middle">Partner Share</th>
-                            <th class="align-middle">Operating Costs</th>
-                            <th class="align-middle">Contribution</th>
-                            <th class="align-middle">Cont / HS </th>
+                            <th class="align-middle">Rev / HS (£) </th>
+                            <th class="align-middle">Partner Share (£)</th>
+                            <th class="align-middle">Operating Costs (£)</th>
+                            <th class="align-middle">Contribution (£)</th>
+                            <th class="align-middle">Cont / HS (£)</th>
                             <th class="align-middle">Margin</th>
                             <th class="align-middle">Gameplays</th>
+                            <th class="align-middle">Gameplay Var (£)</th>
+                            <th class="align-middle">Gameplay Var %</th>
                         </tr>
                     </thead>
 
@@ -166,11 +168,15 @@
                         <td>{{ reports_contr_hs|intcomma }}</td>
                         <td>{{ reports_margin|intcomma }}%</td>
                         <td>{{ reports_gameplays|intcomma }}</td>
+                        <td>{{ reports_gameplay_var|intcomma }}</td>
+                        <td>{{ reports_gp_var_perc }}</td>
                     </tr>
 
                     <thead class="thead-light">
                         <tr>
                             <th>Category</th>
+                            <th></th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -193,7 +199,9 @@
                         <td>{{ rep_aqu_contr|intcomma }}</td>
                         <td>{{ rep_aqu_contr_hs|intcomma }}</td>
                         <td>{{ rep_aqu_margin }}%</td>
-                        <td></td>
+                        <td>{{ rep_aqu_gameplays|intcomma}}</td>
+                        <td>{{ rep_aqu_gameplay_var|intcomma }}</td>
+                        <td>{{ rep_aqu_gp_var_perc }}</td>
                     </tr>
 
                     <tr>
@@ -206,7 +214,9 @@
                         <td>{{ rep_ent_contr|intcomma }}</td>
                         <td>{{ rep_ent_contr_hs|intcomma }}</td>
                         <td>{{ rep_ent_margin|intcomma }}%</td>
-                        <td></td>
+                        <td>{{ rep_ent_gameplays|intcomma}}</td>
+                        <td>{{ rep_ent_gameplay_var|intcomma }}</td>
+                        <td>{{ rep_ent_gp_var_perc }}</td>
                     </tr>
 
                     {% for report in mandalay_bay %}
@@ -220,7 +230,9 @@
                             <td>{{ report.contribution|intcomma }}</td>
                             <td>{{ report.contribution_per_headset|intcomma }}</td>
                             <td>{{ report.margin }}%</td>
-                            <td></td>
+                            <td>{{ report.gameplays|intcomma}}</td>
+                            <td>{{ report.gameplay_variance|intcomma }}</td>
+                            <td>{{ report.gameplay_var_perc|intcomma }}</td>
                         </tr>
                     {% endfor %}
 
@@ -236,11 +248,13 @@
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
 
                     {% for report in reports %}
-                        <tr>
+                        <tr class="{%if report.estimate %} bg-light estimate {% endif %}">
                             <td><a href="/{{report.customer|slugify }}">{{ report.customer }}</a></td>
                             <td>{{ report.revenue|intcomma }}</td>
                             <td>{{ report.headsets }}</td>
@@ -251,7 +265,8 @@
                             <td>{{ report.contribution_per_headset|intcomma }}</td>
                             <td>{{ report.margin }}%</td>
                             <td>{{ report.gameplays|intcomma }}</td>
-                            <td></td>
+                            <td>{{ report.gameplay_variance|intcomma}}</td>
+                            <td class="{% if report.gameplay_var_perc < 0 %} highlight {% endif %}">{{ report.gameplay_var_perc|intcomma}}</td>
                         </tr>
                     {% endfor %}
                 </table>

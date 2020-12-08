@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Report, Customer, Category, Location
+from .models import *
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
@@ -8,7 +8,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-	list_display = ('customer_name', 'slug', 'active')
+	list_display = ('customer_name', 'default_headsets', 'category', 'location', 'currency', 'active',)
 	list_filter = ('active',)
 	prepopulated_fields = { 'slug' : ('customer_name',)}
 
@@ -19,3 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
 	list_display = ('location',)
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+	list_display = ('customer', 'name', 'email', 'department', 'notes')

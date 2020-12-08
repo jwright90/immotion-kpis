@@ -73,6 +73,14 @@ form {
   min-height: 60vh;
 }
 
+.estimate {
+  font-style: italic;
+}
+
+.highlight {
+  color: red;
+}
+
 .login-container {
   float: right;
 }

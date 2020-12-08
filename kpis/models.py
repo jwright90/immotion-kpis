@@ -22,7 +22,6 @@ class Location(models.Model):
         return self.location
 
 #--- Customer model ---
-
 class Customer(models.Model):
     CURRENCIES = (
         ('USD', 'USD'),
@@ -42,9 +41,7 @@ class Customer(models.Model):
     active = models.BooleanField(blank=True, default=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, null=True, blank=True)
     expected_rev_per_gp = models.FloatField(null=True, blank=True)
-    accounts_contact_first_name = models.CharField(max_length=100, null=True, blank=True)
-    accounts_contact_last_name = models.CharField(max_length=100, null=True, blank=True)
-    accounts_contact_email = models.EmailField(null=True, blank=True)   
+    notes = models.TextField(max_length=500, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.customer_name)
@@ -99,6 +96,12 @@ class Report(models.Model):
 
     def margin(self):
         return round(((self.revenue - self.partner_share) / self.revenue) *100)
+
+    def gameplay_var_perc(self):
+        if self.gameplay_variance:
+            return round((self.gameplay_variance / self.revenue) * 100)
+        else:
+            return None
         
     class Meta:
         constraints = [
@@ -106,3 +109,17 @@ class Report(models.Model):
         ]
         
         get_latest_by = 'year'
+
+# --- Contact Model ---
+class Contact(models.Model):
+    DEPARTMENTS = (
+        ('Accounts Payable', 'Accounts Payable'),
+        ('Reporting Contact', 'Reporting Contact'),
+        ('Area Manager', 'Area Manager'),
+    )
+
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    email = models.EmailField(max_length=100, null=True, blank=True)
+    department = models.CharField(max_length=30, choices=DEPARTMENTS, null=True, blank=True)
+    notes = models.TextField(max_length = 500, null=True, blank=True)

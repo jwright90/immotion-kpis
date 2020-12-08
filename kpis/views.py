@@ -11,16 +11,32 @@ from .filters import ReportFilter
 import math, string, requests, json
 from requests.exceptions import HTTPError
 
+reports_list = Report.objects.order_by('-year', '-week_number')
+latest_year = reports_list.aggregate(Max('year'))['year__max']
+latest_week = reports_list.filter(year=latest_year).aggregate(Max('week_number'))['week_number__max']
+latest_dict = {'latest_year' : latest_year, 'latest_week' : latest_week}
 
 def index(request):
-   
-    reports_list = Report.objects.order_by('-year', '-week_number')
-    reports_revenue = Report.objects.aggregate(Sum('revenue'))
-    reports_partner_share = Report.objects.aggregate(Sum('partner_share'))
-    reports_contribution = reports_revenue['revenue__sum'] - reports_partner_share['partner_share__sum']
 
-    latest_year = reports_list.aggregate(Max('year'))['year__max']
-    latest_week = reports_list.filter(year=latest_year).aggregate(Max('week_number'))['week_number__max']
+    reports_revenue = Report.objects.aggregate(Sum('revenue'))['revenue__sum']
+    reports_partner_share = Report.objects.aggregate(Sum('partner_share'))['partner_share__sum']
+    reports_contribution = reports_revenue - reports_partner_share
+
+    #Weeks list (for graph)
+    reports_2020 = reports_list.filter(year=2020)
+    weeks_2020_list = []
+
+    for i in reports_2020:
+        if i.week_number in weeks_2020_list:
+            pass
+        else: 
+            weeks_2020_list.append(i.week_number)
+
+    weeks_2020_list.sort(reverse=False)
+
+    weekly_revenues = []
+    for i in weeks_2020_list:
+        weekly_revenues.append(reports_2020.filter(week_number=i).aggregate(Sum('revenue'))['revenue__sum'])
 
     yearly_reports = {}
     for rep in reports_list:
@@ -42,13 +58,12 @@ def index(request):
 
     the_weekly_reports = [{"week" : k, "report": v} for k, v in weekly_reports.items()]
 
-    context = { 'yearly_reports' : the_reports, 'reports' : reports_list, 
-                't_revenue' : reports_revenue['revenue__sum'], 
-                't_partner_share' : reports_partner_share['partner_share__sum'],
+    context = { 'yearly_reports' : the_reports, 'reports' : reports_list,
+                't_revenue' : reports_revenue, 
+                't_partner_share' : reports_partner_share,
                 't_contribution' : reports_contribution,
-                'latest_year' : latest_year,
-                'latest_week' : latest_week,
-
+                'latest_year' : latest_year, 'latest_week' : latest_week,
+                'weeks_2020_list' : weeks_2020_list, 'weekly_revenues' : weekly_revenues,
     }
 
     #print to see what is inside variable
@@ -184,6 +199,7 @@ def edit_reports(request):
     reports = Report.objects.all().order_by('-estimate', '-year', '-week_number')
 
     context = {
+        **latest_dict, 
         'reports' : reports,
     }
 
@@ -211,8 +227,15 @@ def week(request, wk, yr):
     week_number = wk
     year = yr
 
-    next_week = week_number + 1
-    prev_week = week_number - 1
+    if week_number < 53:
+        next_week = week_number + 1
+    else:
+        next_week = 53
+
+    if week_number > 1:
+        prev_week = week_number - 1
+    else:
+        prev_week = 1
 
     mandalay_bay = Report.objects.filter(week_number=wk, year=yr, customer__customer_name='Mandalay Bay')
 
@@ -277,7 +300,12 @@ def week(request, wk, yr):
 
         ##Gameplays
         reports_gameplays = reports.aggregate(Sum('gameplays'))['gameplays__sum']
-    
+        reports_gameplay_var = reports.aggregate(Sum('gameplay_variance'))['gameplay_variance__sum']
+        if reports_gameplay_var:
+            reports_gp_var_perc = round((reports_gameplay_var / reports_revenue) * 100)
+        else:
+            reports_gp_var_perc = 0
+
     else:
         reports_prev_wk = 0
         reports_prev_yr = 0
@@ -315,6 +343,9 @@ def week(request, wk, yr):
 
         ##Gameplays
         reports_gameplays = 0
+        reports_gameplays = 0
+        reports_gameplay_var = 0
+        reports_gp_var_perc = 0
 
     #ENTERTAINMENT CATEGORY
     rep_ent = reports.filter(customer__category__category_name="Entertainment")
@@ -338,6 +369,14 @@ def week(request, wk, yr):
 
         ###Margin
         rep_ent_margin = round((rep_ent_contr / rep_ent_rev)*100)
+
+        ##Gameplays
+        rep_ent_gameplays = rep_ent.aggregate(Sum('gameplays'))['gameplays__sum']
+        rep_ent_gameplay_var = rep_ent.aggregate(Sum('gameplay_variance'))['gameplay_variance__sum']
+        if rep_ent_gameplay_var:
+            rep_ent_gp_var_perc = round((rep_ent_gameplay_var / rep_ent_rev) * 100)
+        else:
+            rep_ent_gp_var_perc = 0
     
     else:
         rep_ent_rev = 0
@@ -359,6 +398,11 @@ def week(request, wk, yr):
         ###Margin
         rep_ent_margin = 0
     
+        ##Gameplays
+        rep_ent_gameplays = 0
+        rep_ent_gameplay_var = 0
+        rep_ent_gp_var_perc = 0
+
     #AQUARIUM CATEGORY
     rep_aqu = reports.filter(customer__category__category_name="Aquarium")
 
@@ -381,6 +425,14 @@ def week(request, wk, yr):
 
         ###Margin
         rep_aqu_margin = round((rep_aqu_contr / rep_aqu_rev)*100)
+
+        ##Gameplays
+        rep_aqu_gameplays = rep_aqu.aggregate(Sum('gameplays'))['gameplays__sum']
+        rep_aqu_gameplay_var = rep_aqu.aggregate(Sum('gameplay_variance'))['gameplay_variance__sum']
+        if rep_aqu_gameplay_var:
+            rep_aqu_gp_var_perc = round((rep_aqu_gameplay_var / rep_aqu_rev) * 100)
+        else:
+            rep_aqu_gp_var_perc = 0
     
     else:
         rep_aqu_rev = 0
@@ -402,6 +454,11 @@ def week(request, wk, yr):
         ###Margin
         rep_aqu_margin = 0
 
+        ##Gameplays
+        rep_aqu_gameplays = 0
+        rep_aqu_gameplay_var = 0
+        rep_aqu_gp_var_perc = 0
+
     context = { 'reports' : reports, 'customers' : customers, 'customer_headsets' : customer_headsets,
                 'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
                 'yearly_reports' : yearly_reports, 'yearly_revenue' : yearly_revenue,
@@ -414,23 +471,30 @@ def week(request, wk, yr):
                 'reports_prev_wk' : reports_prev_wk, 'reports_revenue_prev_wk' : reports_revenue_prev_wk,
                 'reports_prev_yr' : reports_prev_yr, 'reports_revenue_prev_yr' : reports_revenue_prev_yr,
                 'reports_rev_prev_wk_diff' : reports_rev_prev_wk_diff, 'reports_rev_prev_yr_diff' : reports_rev_prev_yr_diff,
+                'reports_gameplay_var' : reports_gameplay_var, 'reports_gp_var_perc' : reports_gp_var_perc,
                 'rep_ent' : rep_ent, 'rep_ent_rev' : rep_ent_rev, 'rep_ent_hs' : rep_ent_hs,
                 'rep_ent_rphs' : rep_ent_rphs, 'rep_ent_ps' : rep_ent_ps,
                 'rep_ent_ops' : rep_ent_ops, 'rep_ent_contr' : rep_ent_contr,
                 'rep_ent_contr_hs' : rep_ent_contr_hs, 'rep_ent_margin' : rep_ent_margin,
+                'rep_ent_gameplays' : rep_ent_gameplays, 'rep_ent_gameplay_var' : rep_ent_gameplay_var,
+                'rep_ent_gp_var_perc' : rep_ent_gp_var_perc,
                 'rep_aqu' : rep_aqu, 'rep_aqu_rev' : rep_aqu_rev, 'rep_aqu_hs' : rep_aqu_hs,
                 'rep_aqu_rphs' : rep_aqu_rphs, 'rep_aqu_ps' : rep_aqu_ps,
                 'rep_aqu_ops' : rep_aqu_ops, 'rep_aqu_contr' : rep_aqu_contr,
                 'rep_aqu_contr_hs' : rep_aqu_contr_hs, 'rep_aqu_margin' : rep_aqu_margin,
+                'rep_aqu_gameplays' : rep_aqu_gameplays, 'rep_aqu_gameplay_var' : rep_aqu_gameplay_var,
+                'rep_aqu_gp_var_perc' : rep_aqu_gp_var_perc,
                 'mandalay_bay' : mandalay_bay,
                 'prev_week' : prev_week, 'next_week' : next_week, 'year' : year,
-                 }
-
+                **latest_dict,
+    }
+            
     return render(request, 'kpis/week.html', context)
 
 def report_form(request):
     customers = Customer.objects.all().order_by('customer_name')
     customer_fx_list = []
+    customers_dict = {'customers' : customers, 'customer_fx_list' : customer_fx_list}
 
     for customer in customers:
         customer_fx_list.append({"customer" : customer.customer_name, 
@@ -446,27 +510,25 @@ def report_form(request):
             filled_form.save()
             new_form = ReportForm()
             return render(request, 'kpis/report_form.html', 
-            {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+            {**customers_dict, **latest_dict, 'json_fx' : json_fx,
             'success_note' : success_note,
-            'json_fx' : json_fx,
             'report_form' : new_form, 'success_note' : success_note})
         else:
             fail_note = 'Error: Report not posted, please check whether the report already exists for this week.'
             new_form = ReportForm()
             return render(request, 'kpis/report_form.html', 
-            {'customers' : customers, 'customer_fx_list' : customer_fx_list,
+            {**customers_dict, **latest_dict, 'json_fx' : json_fx,
             'fail_note' : fail_note,
-            'json_fx' : json_fx,
             'report_form' : new_form })
 
     else:
         new_form = ReportForm()
         return render(request, 'kpis/report_form.html', 
-        {'customers' : customers, 'customer_fx_list' : customer_fx_list,
-        'json_fx' : json_fx,
+        {**customers_dict, **latest_dict, 'json_fx' : json_fx,
         'report_form' : new_form })
 
 def update_report(request, pk):
+
     customers = Customer.objects.all().order_by('customer_name')
     customer_fx_list = []
 
@@ -486,7 +548,7 @@ def update_report(request, pk):
             form.save()
             return redirect('/')
     
-    context = {'customers' : customers, 'customer_fx_list' : customer_fx_list, 'json_fx' : json_fx, 'report_form' : form }
+    context = {**latest_dict, 'customers' : customers, 'customer_fx_list' : customer_fx_list, 'json_fx' : json_fx, 'report_form' : form,}
     return render(request, 'kpis/edit_form.html', context)
 
 def show_customer(request, customer_slug):
@@ -495,10 +557,7 @@ def show_customer(request, customer_slug):
     try:
         customer = Customer.objects.get(slug=customer_slug)
         customer_reports = Report.objects.filter(customer__customer_name=customer.customer_name).order_by('-year','-week_number')
-
-        
-        context['customer'] = customer
-        context['customer_reports'] = customer_reports
+        context = {'customer' : customer, 'customer_reports' : customer_reports, **latest_dict}
     
     except Customer.DoesNotExist:
         context['customer'] = None
