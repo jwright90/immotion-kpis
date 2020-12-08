@@ -8,7 +8,7 @@ from django.db.models import Sum, Avg, Count, Max
 from .models import *
 from .forms import ReportForm
 from .filters import ReportFilter
-import math, string, requests, json
+import math, string, requests, json, csv
 from requests.exceptions import HTTPError
 
 reports_list = Report.objects.order_by('-year', '-week_number')
@@ -685,4 +685,15 @@ def logout(request):
     auth.logout(request)
     return redirect('/')
 
-    
+def export(request):
+    response = HttpResponse(content_type='text/csv')
+
+    writer = csv.writer(response)
+    writer.writerow(['Year', 'Week Number', 'Customer', 'Headsets', 'Revenue', 'Partner Share'])
+
+    for report in reports_list.values_list('year', 'week_number', 'customer__customer_name', 'headsets', 'revenue', 'partner_share'):
+        writer.writerow(report)
+
+    response['Content-Disposition'] = 'attachment; filename="report.csv"'
+
+    return response
