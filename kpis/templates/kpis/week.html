@@ -219,6 +219,21 @@
                         <td>{{ rep_ent_gp_var_perc }}</td>
                     </tr>
 
+                    <tr>
+                        <td>IVR</td>
+                        <td>{{ rep_ivr_rev|intcomma }}</td>
+                        <td>{{ rep_ivr_hs }}</td>
+                        <td>{{ rep_ivr_rphs|intcomma }}</td>
+                        <td>{{ rep_ivr_ps|intcomma }}</td>
+                        <td>{{ rep_ivr_ops|intcomma }}</td>
+                        <td>{{ rep_ivr_contr|intcomma }}</td>
+                        <td>{{ rep_ivr_contr_hs|intcomma }}</td>
+                        <td>{{ rep_ivr_margin }}%</td>
+                        <td>{{ rep_ivr_gameplays|intcomma}}</td>
+                        <td>{{ rep_ivr_gameplay_var|intcomma }}</td>
+                        <td>{{ rep_ivr_gp_var_perc }}</td>
+                    </tr>
+
                     {% for report in mandalay_bay %}
                         <tr>
                             <td>{{ report.customer }}</a></td>

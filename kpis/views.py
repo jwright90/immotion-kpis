@@ -196,7 +196,7 @@ def report(request, pk):
 
 def edit_reports(request):
 
-    reports = Report.objects.all().order_by('-estimate', '-year', '-week_number')
+    reports = Report.objects.all().order_by('-year', '-week_number')
 
     context = {
         **latest_dict, 
@@ -236,8 +236,6 @@ def week(request, wk, yr):
         prev_week = week_number - 1
     else:
         prev_week = 1
-
-    mandalay_bay = Report.objects.filter(week_number=wk, year=yr, customer__customer_name='Mandalay Bay')
 
     def prev_yr():
         if yr == 1:
@@ -347,6 +345,8 @@ def week(request, wk, yr):
         reports_gameplay_var = 0
         reports_gp_var_perc = 0
 
+    mandalay_bay = Report.objects.filter(week_number=wk, year=yr, customer__customer_name='Mandalay Bay')
+
     #ENTERTAINMENT CATEGORY
     rep_ent = reports.filter(customer__category__category_name="Entertainment")
     
@@ -420,7 +420,7 @@ def week(request, wk, yr):
         rep_aqu_ops = rep_aqu_staff + rep_aqu_rent + rep_aqu_marketing + rep_aqu_sundries
 
         ###Contribution
-        rep_aqu_contr = rep_aqu_rev - rep_aqu_ps - rep_aqu_ops
+        rep_aqu_contr = (rep_aqu_rev - rep_aqu_ps - rep_aqu_ops)
         rep_aqu_contr_hs = round(rep_aqu_contr / rep_aqu_hs)
 
         ###Margin
@@ -459,6 +459,77 @@ def week(request, wk, yr):
         rep_aqu_gameplay_var = 0
         rep_aqu_gp_var_perc = 0
 
+    #IVR_CATEGORY
+    rep_ivr = reports.filter(customer__category__category_name="IVR")
+
+    if rep_ivr:
+        rep_ivr_rev = rep_ivr.aggregate(Sum('revenue'))['revenue__sum']
+        rep_ivr_hs = rep_ivr.aggregate(Sum('headsets'))['headsets__sum']
+        rep_ivr_rphs = round(rep_ivr_rev / rep_ivr_hs)
+        rep_ivr_ps = rep_ivr.aggregate(Sum('partner_share'))['partner_share__sum']
+        
+        ###Operating costs
+        rep_ivr_staff = rep_ivr.aggregate(Sum('staff_costs'))['staff_costs__sum']
+        rep_ivr_rent = rep_ivr.aggregate(Sum('rent_cost'))['rent_cost__sum']
+        rep_ivr_marketing = rep_ivr.aggregate(Sum('marketing_cost'))['marketing_cost__sum']
+        rep_ivr_sundries = rep_ivr.aggregate(Sum('sundries_cost'))['sundries_cost__sum']
+        rep_ivr_ops = rep_ivr_staff + rep_ivr_rent + rep_ivr_marketing + rep_ivr_sundries
+
+        ###Contribution
+        rep_ivr_contr = rep_ivr_rev - rep_ivr_ps - rep_ivr_ops
+        rep_ivr_contr_hs = round(rep_ivr_contr / rep_ivr_hs)
+
+        ###Margin
+        rep_ivr_margin = round((rep_ivr_contr / rep_ivr_rev)*100)
+
+        ##Gameplays
+        rep_ivr_gameplays = rep_ivr.aggregate(Sum('gameplays'))['gameplays__sum']
+        rep_ivr_gameplay_var = rep_ivr.aggregate(Sum('gameplay_variance'))['gameplay_variance__sum']
+        if rep_ivr_gameplay_var:
+            rep_ivr_gp_var_perc = round((rep_ivr_gameplay_var / rep_ivr_rev) * 100)
+        else:
+            rep_ivr_gp_var_perc = 0
+
+        ivr_dict = {'rep_ivr' : rep_ivr, 'rep_ivr_rev' : rep_ivr_rev, 'rep_ivr_hs' : rep_ivr_hs,
+            'rep_ivr_rphs' : rep_ivr_rphs, 'rep_ivr_ps' : rep_ivr_ps,
+            'rep_ivr_ops' : rep_ivr_ops, 'rep_ivr_contr' : rep_ivr_contr,
+            'rep_ivr_contr_hs' : rep_ivr_contr_hs, 'rep_ivr_margin' : rep_ivr_margin,
+            'rep_ivr_gameplays' : rep_ivr_gameplays, 'rep_ivr_gameplay_var' : rep_ivr_gameplay_var,
+            'rep_ivr_gp_var_perc' : rep_ivr_gp_var_perc,}
+
+    else:
+        rep_ivr_rev = 0
+        rep_ivr_hs = 0
+        rep_ivr_rphs = 0
+        rep_ivr_ps = 0
+        
+        ###Operating costs
+        rep_ivr_staff = 0
+        rep_ivr_rent = 0
+        rep_ivr_marketing = 0
+        rep_ivr_sundries = 0
+        rep_ivr_ops = 0
+
+        ###Contribution
+        rep_ivr_contr = 0
+        rep_ivr_contr_hs = 0
+
+        ###Margin
+        rep_ivr_margin = 0
+
+        ##Gameplays
+        rep_ivr_gameplays = 0
+        rep_ivr_gameplay_var = 0
+        rep_ivr_gp_var_perc = 0
+
+        ivr_dict = {'rep_ivr' : rep_ivr, 'rep_ivr_rev' : rep_ivr_rev, 'rep_ivr_hs' : rep_ivr_hs,
+            'rep_ivr_rphs' : rep_ivr_rphs, 'rep_ivr_ps' : rep_ivr_ps,
+            'rep_ivr_ops' : rep_ivr_ops, 'rep_ivr_contr' : rep_ivr_contr,
+            'rep_ivr_contr_hs' : rep_ivr_contr_hs, 'rep_ivr_margin' : rep_ivr_margin,
+            'rep_ivr_gameplays' : rep_ivr_gameplays, 'rep_ivr_gameplay_var' : rep_ivr_gameplay_var,
+            'rep_ivr_gp_var_perc' : rep_ivr_gp_var_perc,}
+        
+
     context = { 'reports' : reports, 'customers' : customers, 'customer_headsets' : customer_headsets,
                 'week_number' : week_number, 'year' : year, 'prev_yr' : prev_yr,
                 'yearly_reports' : yearly_reports, 'yearly_revenue' : yearly_revenue,
@@ -486,7 +557,7 @@ def week(request, wk, yr):
                 'rep_aqu_gp_var_perc' : rep_aqu_gp_var_perc,
                 'mandalay_bay' : mandalay_bay,
                 'prev_week' : prev_week, 'next_week' : next_week, 'year' : year,
-                **latest_dict,
+                **latest_dict, **ivr_dict,
     }
             
     return render(request, 'kpis/week.html', context)
@@ -546,7 +617,7 @@ def update_report(request, pk):
         form = ReportForm(request.POST, instance=report)
         if form.is_valid():
             form.save()
-            return redirect('/')
+            return redirect('/editreports')
     
     context = {**latest_dict, 'customers' : customers, 'customer_fx_list' : customer_fx_list, 'json_fx' : json_fx, 'report_form' : form,}
     return render(request, 'kpis/edit_form.html', context)

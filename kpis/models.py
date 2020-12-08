@@ -89,13 +89,16 @@ class Report(models.Model):
                         + self.marketing_cost + self.sundries_cost )
 
     def contribution(self):
-        return round(self.revenue - self.partner_share)
+        return round(self.revenue - self.partner_share - 
+            (self.staff_costs + self.rent_cost + self.marketing_cost + self.sundries_cost ))
 
     def contribution_per_headset(self):
-        return round((self.revenue - self.partner_share) / self.headsets)
+        return round((self.revenue - self.partner_share - 
+            (self.staff_costs + self.rent_cost + self.marketing_cost + self.sundries_cost )) / self.headsets)
 
     def margin(self):
-        return round(((self.revenue - self.partner_share) / self.revenue) *100)
+        return round(((self.revenue - self.partner_share - 
+            (self.staff_costs + self.rent_cost + self.marketing_cost + self.sundries_cost )) / self.revenue) *100)
 
     def gameplay_var_perc(self):
         if self.gameplay_variance:
