@@ -12,9 +12,9 @@ import math, string, requests, json, csv
 from requests.exceptions import HTTPError
 
 reports_list = Report.objects.order_by('-year', '-week_number')
-# latest_year = reports_list.aggregate(Max('year'))['year__max']
-# latest_week = reports_list.filter(year=latest_year).aggregate(Max('week_number'))['week_number__max']
-# latest_dict = {'latest_year' : latest_year, 'latest_week' : latest_week}
+latest_year = reports_list.aggregate(Max('year'))['year__max']
+latest_week = reports_list.filter(year=latest_year).aggregate(Max('week_number'))['week_number__max']
+latest_dict = {'latest_year' : latest_year, 'latest_week' : latest_week}
 
 def index(request):
 
