@@ -80,6 +80,7 @@ def index(request):
                 'weeks_2020_list' : weeks_2020_list, 'all_weekly_rev' : all_weekly_rev,
                 'aqu_weekly_rev' : aqu_weekly_rev, 'ent_weekly_rev' : ent_weekly_rev,
                 'ivr_weekly_rev' : ivr_weekly_rev, 'mb_weekly_rev' : mb_weekly_rev,
+                **latest_dict,
     }
 
     #print to see what is inside variable
@@ -107,7 +108,8 @@ def weekly(request, yr):
                 'weekly_revenues' : weekly_revenues,
                 'weekly_headsets' : weekly_headsets,
                 'year' : year,
-                'total_revenue' : total_revenue
+                'total_revenue' : total_revenue,
+                **latest_dict,
                 }
 
     return render(request, 'kpis/weekly.html', context)
@@ -189,7 +191,8 @@ def search(request):
                                                         'explorer2' : explorer2,
                                                         'explorer3' : explorer3,
                                                         'customer_tabledata' : customer_tabledata,
-                                                        'customer_tabledict' : customer_tabledict
+                                                        'customer_tabledict' : customer_tabledict,
+                                                        **latest_dict,
                                                         })
 
 def report(request, pk):
@@ -206,6 +209,7 @@ def report(request, pk):
         'customer_reports' : customer_reports,
         'week' : week,
         'year' : year,
+        **latest_dict,
     }
 
     return render(request, 'kpis/report.html', context)
@@ -231,6 +235,7 @@ def delete_report(request, pk):
 
     context = {
         'report' : report,
+        **latest_dict,
     }
 
     return render(request, 'kpis/delete_report.html', context)
@@ -647,7 +652,7 @@ def show_customer(request, customer_slug):
         context = {'customer' : customer, 'customer_reports' : customer_reports, **latest_dict}
     
     except Customer.DoesNotExist:
-        context['customer'] = None
+        context = {'customer' : None, **latest_dict}
     
     return render(request, 'kpis/customer.html', context)
 
@@ -681,6 +686,9 @@ def register(request):
         return render(request, 'kpis/register.html')
 
 def login(request):
+
+    context = {**latest_dict,}
+
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -689,13 +697,13 @@ def login(request):
 
         if user is not None:
             auth.login(request, user)
-            return redirect("/all_reports")
+            return redirect("/")
         else:
             messages.info(request, 'Invalid credentials')
             return redirect("login")
 
     else:
-        return render(request, 'kpis/login.html')
+        return render(request, 'kpis/login.html', context)
 
 def logout(request):
     auth.logout(request)
