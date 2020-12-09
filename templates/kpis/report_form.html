@@ -115,6 +115,8 @@ function setCustomer() {
     headsets = customerObj[0].headsets;
     exp_rev_per_gp = customerObj[0].exp_rev_per_gp;
     partnerSharePerc = customerObj[0].partner_share_perc;
+
+    console.log(partnerSharePerc);
     
     document.getElementById("id_headsets").value = headsets;
 
@@ -293,7 +295,7 @@ document.getElementById("id_fx_rate").addEventListener("input", calcGbpRevenue);
 
 // Partner share
 function calcPartnerShare() {
-    if (partnerSharePerc) {
+    if (typeof partnerSharePerc !== 'undefined') {
         let partnerShare = Math.round(document.getElementById("id_revenue").value / 100 * partnerSharePerc);
         document.getElementById("id_partner_share").value = partnerShare;
     } else {
