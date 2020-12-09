@@ -5,6 +5,8 @@
 
 {% block content %}
 
+{% if user.is_authenticated %}
+
 <h3>Edit report</h3>
 
 <div class="form-wrapper mt-4">
@@ -310,6 +312,14 @@ function updateAssumptions() {
 }
 
 </script>
+
+{% else %}
+<div class="container">
+    <h4>Login Required</h4>
+    <p>Please <a href="/login">login</a> to view this page.</p>
+
+</div>
+{% endif %}
 
 {% endblock %}
 

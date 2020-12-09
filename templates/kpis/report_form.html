@@ -3,7 +3,11 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+
+
 {% block content %}
+
+{% if user.is_authenticated %}
 
 <h3>Enter new report</h3>
 
@@ -315,6 +319,14 @@ function updateAssumptions() {
 }
 
 </script>
+
+{% else %}
+<div class="container">
+    <h4>Login Required</h4>
+    <p>Please <a href="/login">login</a> to view this page.</p>
+
+</div>
+{% endif %}
 
 {% endblock %}
 

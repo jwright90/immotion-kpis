@@ -3,6 +3,8 @@
 {% load humanize %}
 {% block content %}
 
+{% if user.is_authenticated %}
+
 <h3 class="">Edit reports</h3>
 
     <table class="table table-responsive text-uppercase small">
@@ -28,5 +30,12 @@
         {% endfor %}
     </table>
 
+{% else %}
+<div class="container">
+    <h4>Login Required</h4>
+    <p>Please <a href="/login">login</a> to view this page.</p>
 
-{% endblock content %}
+</div>
+{% endif %}
+
+{% endblock %}

@@ -3,6 +3,8 @@
 {% block content %}
 {% load humanize %}
 
+{% if user.is_authenticated %}
+
 <h4 class="display-4 font-weight-bold">Immotion KPIs</h4>
 
 <br>
@@ -214,6 +216,13 @@ var kpiChart = new Chart(ctx, {
     }
 });
 </script>
+
+{% else %}
+<div class="container">
+    <h4>Login Required</h4>
+    <p>Please <a href="/login">login</a> to view this page.</p>
+</div>
+{% endif %}
 
 {% endblock content %}
 
