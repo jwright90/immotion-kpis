@@ -1,1 +1,1 @@
-web: gunicorn immotion.wsgi
+web: gunicorn immotion.wsgi --log-file -

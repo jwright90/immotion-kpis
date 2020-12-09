@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,8 @@ SECRET_KEY = '6_l##gxny6*%vo#1*^_riqqsp4@j)g8dd-g333hkoj@+-q3s!_'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'aqueous-lowlands-60862.herokuapp.com'
+    'aqueous-lowlands-60862.herokuapp.com',
+    '127.0.0.1'
 ]
 
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'kpis',
     'crispy_forms',
+    'whitenoise.runserver_nostatic',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -54,7 +57,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'immotion.urls'
 
@@ -79,6 +85,8 @@ WSGI_APPLICATION = 'immotion.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+import dj_database_url
+
 
 DATABASES = {
     'default': {
@@ -87,6 +95,8 @@ DATABASES = {
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -128,3 +138,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/images/'
+
+django_heroku.settings(locals()
