@@ -24,7 +24,9 @@ SECRET_KEY = '6_l##gxny6*%vo#1*^_riqqsp4@j)g8dd-g333hkoj@+-q3s!_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'aqueous-lowlands-60862.herokuapp.com'
+]
 
 
 # Application definition
