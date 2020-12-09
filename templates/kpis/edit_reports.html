@@ -13,6 +13,7 @@
             <th>Year</th>
             <th>Location</th>
             <th>Revenue</th>
+            <th>Margin</th>
             <th>Gameplays</th>
             <th></th>
             <th></th>
@@ -23,6 +24,7 @@
             <td class="align-middle">{{ report.year }}</td>
             <td class="align-middle">{{ report.customer }}</td>
             <td class="align-middle">{{ report.revenue|intcomma }}</td>
+            <td class="align-middle">{{ report.margin }}</td>
             <td class="align-middle">{{ report.gameplays|intcomma }}</td>
             <td class="align-middle"><a type="button" href="/editreport/{{report.id}}" class="btn btn-warning btn-sm text-white">Edit</a></td>
             <td class="align-middle"><a type="button" href="/deletereport/{{report.id}}" class="btn btn-danger btn-sm text-white">Delete</a></td>
