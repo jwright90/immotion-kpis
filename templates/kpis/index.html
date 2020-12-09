@@ -18,8 +18,19 @@
                 <th>Revenue</th>
                 <td>{{t_revenue|intcomma}}</td>
             <tr></tr>
-                <th>Avg weekly headsets in operation</th>
+                <th>Useful stats to go here</th>
                 <td></td>
+            <tr></tr>
+                <th>Take a look at</th>
+                <td></td>
+            <tr>
+                <td><a href="/week/{{latest_week}}/{{latest_year}}">Latest report</a></td>
+                <td><a href="/admin">Admin panel</a></td>
+            </tr>
+            <tr>
+                <td><a href="/newreport">Adding a report</a></td>
+                <td><a href="/editreports">Editing a report</a></td>
+            </tr>
         </table>
     </div>
 
@@ -29,7 +40,7 @@
         <ul>
             <li>Easier to see estimates that have been reported week-on-week, to know which reports require chasing</li>
             <li>Reporting contact information stored in one central location. 
-                Ability to store information such as 'invoiced: weekly/monthly', 
+                <br>Ability to store information such as 'invoiced: weekly/monthly', 
                 or any other notes pertaining to specific partners</li>
             <li>Gameplay variance reporting</li>
             <li>Capacity utilization</li>
@@ -53,7 +64,7 @@
         <p><strong>Cons of website</strong></p>
         <ul>
             <li>If the website breaks, it could prove difficult to fix. 
-                A backup of the database will be made daily.</li>
+                <br>The database will be backed up and CSV exports can be done.</li>
             <li>Requires specialised knowledge to edit the system.</li>
             <li>Harder to audit calculations.</li>
         </ul>
@@ -74,6 +85,7 @@
             <li>Fix weekly url links to not go below 1 or above 53</li>
             <li>Finish navbar</li>
             <li>Add start / end dates in "calculations" for new report page</li>
+            <li>Make the text responsive for the weekly reports</li>
         </ul>
 
         <p><strong>Ideas</strong></p>
