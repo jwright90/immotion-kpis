@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     'kpis',
     'crispy_forms',
     'whitenoise.runserver_nostatic',
-    'bootstrap',
-    'fontawesome',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
