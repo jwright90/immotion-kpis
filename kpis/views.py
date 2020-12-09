@@ -34,9 +34,23 @@ def index(request):
 
     weeks_2020_list.sort(reverse=False)
 
-    weekly_revenues = []
+    all_weekly_rev = []
+    aqu_weekly_rev = []
+    ent_weekly_rev = []
+    ivr_weekly_rev = []
+    mb_weekly_rev = []
+
     for i in weeks_2020_list:
-        weekly_revenues.append(reports_2020.filter(week_number=i).aggregate(Sum('revenue'))['revenue__sum'])
+        aqu_weekly_rev.append(reports_2020.filter(week_number=i, customer__category__category_name='Aquarium').aggregate(Sum('revenue'))['revenue__sum'])
+        ent_weekly_rev.append(reports_2020.filter(week_number=i, customer__category__category_name='Entertainment').aggregate(Sum('revenue'))['revenue__sum'])
+        ivr_weekly_rev.append(reports_2020.filter(week_number=i, customer__category__category_name='IVR').aggregate(Sum('revenue'))['revenue__sum'])
+        mb_weekly_rev.append(reports_2020.filter(week_number=i, customer__category__category_name='Mandalay Bay').aggregate(Sum('revenue'))['revenue__sum'])
+        all_weekly_rev.append(reports_2020.filter(week_number=i).aggregate(Sum('revenue'))['revenue__sum'])
+
+    aqu_weekly_rev = [0 if v is None else v for v in aqu_weekly_rev]
+    ent_weekly_rev = [0 if v is None else v for v in ent_weekly_rev]
+    ivr_weekly_rev = [0 if v is None else v for v in ivr_weekly_rev]
+    mb_weekly_rev = [0 if v is None else v for v in mb_weekly_rev]
 
     yearly_reports = {}
     for rep in reports_list:
@@ -63,7 +77,9 @@ def index(request):
                 't_partner_share' : reports_partner_share,
                 't_contribution' : reports_contribution,
                 'latest_year' : latest_year, 'latest_week' : latest_week,
-                'weeks_2020_list' : weeks_2020_list, 'weekly_revenues' : weekly_revenues,
+                'weeks_2020_list' : weeks_2020_list, 'all_weekly_rev' : all_weekly_rev,
+                'aqu_weekly_rev' : aqu_weekly_rev, 'ent_weekly_rev' : ent_weekly_rev,
+                'ivr_weekly_rev' : ivr_weekly_rev, 'mb_weekly_rev' : mb_weekly_rev,
     }
 
     #print to see what is inside variable
