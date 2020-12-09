@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'immotion.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'immotion_kpis',
         'USER' : 'postgres',
         'PASSWORD' : 'xm@5tr33',
